@@ -2,14 +2,24 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 
 
-const FolderCard = ({item, onRightClick}) => {
+const FolderCard = ({item, onRightClick, onSelect, isSelected }) => {
 
   
 
   
 
   return (
-    <div>
+    <div className='relative'>
+         {/* Selection checkbox */}
+      <input
+        type="checkbox"
+        className="absolute top-2 left-2 z-10 w-4 h-4"
+        checked={isSelected}
+        onChange={() => onSelect(item)}
+        onClick={(e) => e.stopPropagation()}
+      />
+
+      {/* Folder/file card */}
         <div  onContextMenu={(e) => {
         e.preventDefault();
         onRightClick(e, item);

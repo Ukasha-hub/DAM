@@ -15,6 +15,8 @@ const FolderItems = () => {
   const [itemToCopy, setItemToCopy] = useState(null);
  const navigate = useNavigate();
 
+ const [selectedItems, setSelectedItems] = useState([]);
+
  const [cards, setCards] = useState(() => {
     const saved = localStorage.getItem('cards');
     return saved ? JSON.parse(saved) : cardData;
@@ -30,7 +32,16 @@ const FolderItems = () => {
     });
   };
 
-
+  const handleSelectItem = (item) => {
+    setSelectedItems((prevSelected) => {
+      const isAlreadySelected = prevSelected.some(i => i.id === item.id);
+      if (isAlreadySelected) {
+        return prevSelected.filter(i => i.id !== item.id);
+      } else {
+        return [...prevSelected, item];
+      }
+    });
+  };
 
   
   
@@ -127,24 +138,30 @@ const FolderItems = () => {
       window.location.reload();
   };
 
-  const handleCopy = (originalItem, targetFolderId) => {
-    const newId = Date.now();
-    const copiedItem = {
-      ...originalItem,
-      id: newId,
-      title: `${originalItem.title} (copy)`
-    };
-  
+  const handleCopy = (originalItems, targetFolderId) => {
     const updatedCards = [...cards];
   
-    if (targetFolderId !== 'null') {
-      const destinationFolder = updatedCards.find(f => f.id === parseInt(targetFolderId));
-      if (destinationFolder && destinationFolder.folderORfile === 'folder') {
-        destinationFolder.folderItems.push(newId);
-      }
-    }
+    // Ensure originalItems is always an array
+    const itemsToCopy = Array.isArray(originalItems) ? originalItems : [originalItems];
   
-    updatedCards.push(copiedItem);
+    itemsToCopy.forEach(originalItem => {
+      const newId = crypto.randomUUID();// or use a proper ID generator
+      const copiedItem = {
+        ...originalItem,
+        id: newId,
+        title: `${originalItem.title} (copy)`
+      };
+  
+      if (targetFolderId !== 'null') {
+        const destinationFolder = updatedCards.find(f => f.id === parseInt(targetFolderId));
+        if (destinationFolder && destinationFolder.folderORfile === 'folder') {
+          destinationFolder.folderItems.push(newId);
+        }
+      }
+  
+      updatedCards.push(copiedItem);
+    });
+  
     setCards(updatedCards);
     localStorage.setItem('cards', JSON.stringify(updatedCards));
   };
@@ -166,7 +183,8 @@ const FolderItems = () => {
           }
       }}>
       {items.map(item => (
-        <FolderCard key={item.id} item={item} onRightClick={handleRightClick} />
+        <FolderCard key={item.id} item={item} onRightClick={handleRightClick} onSelect={handleSelectItem}
+        isSelected={selectedItems.some(i => i.id === item.id)}/>
       ))}
 
              {/* Context menu */}
@@ -180,7 +198,7 @@ const FolderItems = () => {
                                         <li onClick={handleOpenFileItems}>Open Folder</li>
                                         <li onClick={()=>{setShowMoveModal(true);}}>Move Folder</li>
                                         <li onClick={() => {
-                                                setItemToCopy(contextMenu.item);
+                                                 setItemToCopy(selectedItems.length ? selectedItems : [contextMenu.item]);
                                                 setShowCopyModal(true);
                                               }}>Copy</li>
                                         <li onClick={() => handleDelete(contextMenu.item.id)}>Delete</li>
@@ -191,8 +209,9 @@ const FolderItems = () => {
                                         <li onClick={handleOpenMetadata}>Open Meta</li>
                                         <li onClick={()=>{setShowMoveModal(true);}}>Move File</li>
                                         <li onClick={() => {
-                                              setItemToCopy(contextMenu.item);
+                                               setItemToCopy(selectedItems.length ? selectedItems : [contextMenu.item]);
                                               setShowCopyModal(true);
+                                              
                                             }}>Copy</li>
                                         <li onClick={() => handleDelete(contextMenu.item.id)}>Delete</li>
                                       </>
@@ -211,7 +230,7 @@ const FolderItems = () => {
               <CopyFileFolderModal
               isOpen={showCopyModal}
               folders={folders}
-              item={itemToCopy}
+              item={selectedItems}
               onCopy={handleCopy}
               onClose={() => setShowCopyModal(false)}
               />
