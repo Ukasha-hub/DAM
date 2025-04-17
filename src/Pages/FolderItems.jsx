@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import FolderCard from '../Components/FolderCard';
 import MoveFileFolderModal from '../Components/MoveFileFolderModal';
 import CopyFileFolderModal from '../Components/CopyFileFolderModal';
+import DeleteFileFolderModal from '../Components/DeleteFileFolderModal';
 
 const FolderItems = () => {
 
@@ -17,6 +18,9 @@ const FolderItems = () => {
  const navigate = useNavigate();
 
  const [selectedItems, setSelectedItems] = useState([]);
+
+ const [showDeleteModal, setShowDeleteModal] = useState(false);
+const [itemToDelete, setItemToDelete] = useState(null);
 
  const [cards, setCards] = useState(() => {
     const saved = localStorage.getItem('cards');
@@ -134,16 +138,31 @@ const FolderItems = () => {
   if (!folder) return <div className="p-4">Folder not found.</div>;
   if (items.length === 0) return <div className="p-4">This folder is empty.</div>;
 
-  const handleDelete = (itemId) => {
-      const updatedCards = cards.filter(card => card.id !== itemId);
-      updatedCards.forEach(card => {
-        if (card.folderItems) {
-          card.folderItems = card.folderItems.filter(id => id !== itemId && id !== String(itemId));
-        }
-      });
-      setCards(updatedCards);
-      localStorage.setItem('cards', JSON.stringify(updatedCards));
+  const confirmDelete = (item) => {
+    setItemToDelete(item);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = () => {
+    const itemId = itemToDelete.id;
+
+    const updatedCards = cards.filter(card => card.id !== itemId);
+    updatedCards.forEach(card => {
+      if (card.folderItems) {
+        card.folderItems = card.folderItems.filter(id => id !== itemId && id !== String(itemId));
+      }
+    });
+  
+    setCards(updatedCards);
+    localStorage.setItem('cards', JSON.stringify(updatedCards));
+    setShowDeleteModal(false);
+    setItemToDelete(null);
       window.location.reload();
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setItemToDelete(null);
   };
 
   const handleCopy = (originalItems, targetFolderId) => {
@@ -212,7 +231,7 @@ const FolderItems = () => {
                                                  setItemToCopy(selectedItems.length ? selectedItems : [contextMenu.item]);
                                                 setShowCopyModal(true);
                                               }}>Copy</li>
-                                        <li onClick={() => handleDelete(contextMenu.item.id)}>Delete</li>
+                                        <li onClick={() => confirmDelete(contextMenu.item)}>Delete</li>
                                       </>
                                     )}
                                     {(contextMenu.type === 'file') && (
@@ -226,7 +245,7 @@ const FolderItems = () => {
                                               setShowCopyModal(true);
                                               
                                             }}>Copy</li>
-                                        <li onClick={() => handleDelete(contextMenu.item.id)}>Delete</li>
+                                        <li onClick={() => confirmDelete(contextMenu.item)}>Delete</li>
                                       </>
                                     )}
                                    
@@ -248,6 +267,13 @@ const FolderItems = () => {
               onClose={() => setShowCopyModal(false)}
               />
             )}
+
+          <DeleteFileFolderModal
+            show={showDeleteModal}
+            item={itemToDelete}
+            onDelete={handleDelete}
+            onCancel={cancelDelete}
+          />
     </div>
   )
 }
