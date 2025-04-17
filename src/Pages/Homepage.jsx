@@ -3,8 +3,8 @@ import cardData from '../Data/CardData'
 import FolderCard from '../Components/FolderCard'
 
 import { useNavigate } from 'react-router-dom'
-import MoveFileFolderModal from './MoveFileFolderModal'
-import CopyFileFolderModal from './CopyFileFolderModal'
+import MoveFileFolderModal from '../Components/MoveFileFolderModal'
+import CopyFileFolderModal from '../Components/CopyFileFolderModal'
 
 
 const Homepage = () => {
@@ -78,14 +78,9 @@ const Homepage = () => {
     };
   }, [contextMenu]);
 
-  const handleMoveClick = () => {
-    setShowMoveModal(true);
-  };
+  
 
-  //const handleCopyClick = () => {
-    //setItemToCopy(contextMenu.item);
-    //setShowCopyModal(true);
-  //};
+  
   
   const handleMove = (item, targetFolderId) => {
         // Make a deep copy of cards
@@ -122,6 +117,7 @@ const Homepage = () => {
     });
     setCards(updatedCards);
     localStorage.setItem('cards', JSON.stringify(updatedCards));
+    window.location.reload();
   };
 
   const handleCopy = (originalItem, targetFolderId) => {
@@ -267,7 +263,7 @@ const Homepage = () => {
                                     {(contextMenu.type === 'folder') && (
                                       <>
                                         <li onClick={handleOpenFileItems}>Open Folder</li>
-                                        <li onClick={handleMoveClick}>Move Folder</li>
+                                        <li onClick={()=>{setShowMoveModal(true);}}>Move Folder</li>
                                         <li onClick={() => {
                                                 setItemToCopy(contextMenu.item);
                                                 setShowCopyModal(true);
@@ -278,7 +274,7 @@ const Homepage = () => {
                                     {(contextMenu.type === 'file') && (
                                       <>
                                         <li onClick={handleOpenMetadata}>Open Meta</li>
-                                        <li onClick={handleMoveClick}>Move File</li>
+                                        <li onClick={()=>{setShowMoveModal(true);}}>Move File</li>
                                         <li onClick={() => {
                                               setItemToCopy(contextMenu.item);
                                               setShowCopyModal(true);
@@ -286,9 +282,7 @@ const Homepage = () => {
                                         <li onClick={() => handleDelete(contextMenu.item.id)}>Delete</li>
                                       </>
                                     )}
-                                    {(contextMenu.type === 'blank' || contextMenu.item === null) && clipboard && (
-                                      <li onClick={handlePaste}>Paste</li>
-                                    )}
+                                    
                                   </ul>
                                 )}
                         </div>
@@ -324,4 +318,4 @@ const Homepage = () => {
   )
 }
 
-export default Homepage  
+export default Homepage;  

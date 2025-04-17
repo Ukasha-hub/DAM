@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import FolderCard from '../Components/FolderCard';
-import MoveFileFolderModal from './MoveFileFolderModal';
-import CopyFileFolderModal from './CopyFileFolderModal';
+import MoveFileFolderModal from '../Components/MoveFileFolderModal';
+import CopyFileFolderModal from '../Components/CopyFileFolderModal';
 
 const FolderItems = () => {
 
@@ -32,9 +32,7 @@ const FolderItems = () => {
 
 
 
-  const handleMoveClick = () => {
-    setShowMoveModal(true);
-  };
+  
   
   const handleMove = (item, targetFolderId) => {
     // Make a deep copy of cards
@@ -126,6 +124,7 @@ const FolderItems = () => {
       });
       setCards(updatedCards);
       localStorage.setItem('cards', JSON.stringify(updatedCards));
+      window.location.reload();
   };
 
   const handleCopy = (originalItem, targetFolderId) => {
@@ -179,7 +178,7 @@ const FolderItems = () => {
                                     {(contextMenu.type === 'folder') && (
                                       <>
                                         <li onClick={handleOpenFileItems}>Open Folder</li>
-                                        <li onClick={handleMoveClick}>Move Folder</li>
+                                        <li onClick={()=>{setShowMoveModal(true);}}>Move Folder</li>
                                         <li onClick={() => {
                                                 setItemToCopy(contextMenu.item);
                                                 setShowCopyModal(true);
@@ -190,7 +189,7 @@ const FolderItems = () => {
                                     {(contextMenu.type === 'file') && (
                                       <>
                                         <li onClick={handleOpenMetadata}>Open Meta</li>
-                                        <li onClick={handleMoveClick}>Move File</li>
+                                        <li onClick={()=>{setShowMoveModal(true);}}>Move File</li>
                                         <li onClick={() => {
                                               setItemToCopy(contextMenu.item);
                                               setShowCopyModal(true);
@@ -198,9 +197,7 @@ const FolderItems = () => {
                                         <li onClick={() => handleDelete(contextMenu.item.id)}>Delete</li>
                                       </>
                                     )}
-                                    {(contextMenu.type === 'blank' || contextMenu.item === null) && clipboard && (
-                                      <li onClick={handlePaste}>Paste</li>
-                                    )}
+                                   
                                   </ul>
                                 )}
             <MoveFileFolderModal

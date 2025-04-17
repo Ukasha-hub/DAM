@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import api from '../Data/api';
-import UploadFileModal from './UploadSuccessErrorModal';
+import UploadFileModal from '../Components/UploadSuccessErrorModal';
 
 const AddFilePage = () => {
   const [activeTab, setActiveTab] = useState("add-asset");  
