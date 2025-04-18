@@ -13,7 +13,7 @@ const FolderItems = () => {
   const {activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
     itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
     itemToDelete, setItemToDelete, cards, setCards,  handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
-    handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMoveInFiles, cancelDelete, handleCopy} = FileFolderManager();
+    handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMoveInFolders, cancelDelete, handleCopy} = FileFolderManager();
 
   const { id } = useParams();
   const [folder, setFolder] = useState(null);
@@ -126,7 +126,7 @@ const FolderItems = () => {
             <MoveFileFolderModal
                         isOpen={showMoveModal}
                         onClose={() => setShowMoveModal(false)}
-                        onMove={handleMoveInFiles}
+                        onMove={handleMoveInFolders}
                         folders={folders}
                         item={itemToMove}></MoveFileFolderModal>
 

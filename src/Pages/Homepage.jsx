@@ -132,39 +132,57 @@ const Homepage = () => {
 
                             {/* Context menu */}
                             {contextMenu.visible && (
-                                  <ul
-                                    className="fixed bg-white border rounded shadow-lg text-sm z-50"
-                                    style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
+                                <ul
+                                  className="fixed bg-white border p-3 flex flex-col gap-2 rounded shadow-lg text-sm z-50"
+                                  style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
+                                >
+                                  {contextMenu.type === 'folder' && (
+                                    <li 
+                                      className=" hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                      onClick={handleOpenFileItems}
+                                    >
+                                      Open Folder
+                                    </li>
+                                  )}
+                                  {contextMenu.type === 'file' && (
+                                    <li 
+                                      className=" hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                      onClick={handleOpenMetadata}
+                                    >
+                                      Open Meta
+                                    </li>
+                                  )}
+
+                                  <li
+                                    className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                    onClick={() => {
+                                      const items = selectedItems.length ? selectedItems : [contextMenu.item];
+                                      setItemToMove(items);
+                                      setShowMoveModal(true);
+                                    }}
                                   >
-                                    {(contextMenu.type === 'folder') && (
-                                      <>
-                                        <li onClick={handleOpenFileItems}>Open Folder</li>
-                                        <li onClick={()=> {const items = selectedItems.length ? selectedItems : [contextMenu.item];
-                                             setItemToMove(items); 
-                                             setShowMoveModal(true);}}>Move Folder</li>
-                                        <li onClick={() => {
-                                                setItemToCopy(selectedItems.length ? selectedItems : [contextMenu.item]);
-                                                setShowCopyModal(true);
-                                              }}>Copy</li>
-                                        <li onClick={() => confirmDelete(selectedItems)}>Delete</li>
-                                      </>
-                                    )}
-                                    {(contextMenu.type === 'file') && (
-                                      <>
-                                        <li onClick={handleOpenMetadata}>Open Meta</li>
-                                        <li onClick={()=>{const items = selectedItems.length ? selectedItems : [contextMenu.item];
-                                            setItemToMove(items); 
-                                            setShowMoveModal(true);}}>Move File</li>
-                                        <li onClick={() => {
-                                              setItemToCopy(selectedItems.length ? selectedItems : [contextMenu.item]);
-                                              setShowCopyModal(true);
-                                            }}>Copy</li>
-                                        <li onClick={() => confirmDelete(selectedItems)}>Delete</li>
-                                      </>
-                                    )}
-                                    
-                                  </ul>
-                                )}
+                                    Move {contextMenu.type === 'folder' ? 'Folder' : 'File'}
+                                  </li>
+
+                                  <li
+                                    className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                    onClick={() => {
+                                      setItemToCopy(selectedItems.length ? selectedItems : [contextMenu.item]);
+                                      setShowCopyModal(true);
+                                    }}
+                                  >
+                                    Copy
+                                  </li>
+
+                                  <li 
+                                    className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                    onClick={() => confirmDelete(selectedItems)}
+                                  >
+                                    Delete
+                                  </li>
+                                </ul>
+                              )}
+
                         </div>
                     </div>
 

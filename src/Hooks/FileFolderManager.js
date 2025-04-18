@@ -128,7 +128,7 @@ const FileFolderManager = () =>{
           console.log(`Moved ${items.length} item(s) to folder ID: ${targetFolderId}`);
         };
 
-        const handleMoveInFiles = (itemsToMove, targetFolderId) => {
+        const handleMoveInFolders = (itemsToMove, targetFolderId) => {
             const updatedCards = [...cards];
           
             const items = Array.isArray(itemsToMove) ? itemsToMove : [itemsToMove];
@@ -234,7 +234,7 @@ const FileFolderManager = () =>{
         return{activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
             itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
             itemToDelete, setItemToDelete, cards, setCards,  topLevelItems, handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
-            handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMove,handleMoveInFiles, cancelDelete, handleCopy}
+            handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMove,handleMoveInFolders, cancelDelete, handleCopy}
 
 
 }
