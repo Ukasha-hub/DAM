@@ -144,20 +144,28 @@ const [itemToDelete, setItemToDelete] = useState(null);
   };
 
   const handleDelete = () => {
-    const itemId = itemToDelete.id;
-
-    const updatedCards = cards.filter(card => card.id !== itemId);
-    updatedCards.forEach(card => {
-      if (card.folderItems) {
-        card.folderItems = card.folderItems.filter(id => id !== itemId && id !== String(itemId));
-      }
-    });
+    const itemIds = itemToDelete.map(item => item.id);
+  
+    const updatedCards = cards
+      .filter(card => !itemIds.includes(card.id))
+      .map(card => {
+        if (card.folderItems) {
+          return {
+            ...card,
+            folderItems: card.folderItems.filter(
+              id => !itemIds.includes(id) && !itemIds.includes(String(id))
+            ),
+          };
+        }
+        return card;
+      });
   
     setCards(updatedCards);
-    localStorage.setItem('cards', JSON.stringify(updatedCards));
+    localStorage.setItem("cards", JSON.stringify(updatedCards));
     setShowDeleteModal(false);
     setItemToDelete(null);
-      window.location.reload();
+    setSelectedItems([]); // clear selection
+    window.location.reload();
   };
 
   const cancelDelete = () => {
@@ -231,7 +239,7 @@ const [itemToDelete, setItemToDelete] = useState(null);
                                                  setItemToCopy(selectedItems.length ? selectedItems : [contextMenu.item]);
                                                 setShowCopyModal(true);
                                               }}>Copy</li>
-                                        <li onClick={() => confirmDelete(contextMenu.item)}>Delete</li>
+                                        <li onClick={() => confirmDelete(selectedItems)}>Delete</li>
                                       </>
                                     )}
                                     {(contextMenu.type === 'file') && (
@@ -245,7 +253,7 @@ const [itemToDelete, setItemToDelete] = useState(null);
                                               setShowCopyModal(true);
                                               
                                             }}>Copy</li>
-                                        <li onClick={() => confirmDelete(contextMenu.item)}>Delete</li>
+                                        <li onClick={() => confirmDelete(selectedItems)}>Delete</li>
                                       </>
                                     )}
                                    
@@ -270,7 +278,7 @@ const [itemToDelete, setItemToDelete] = useState(null);
 
           <DeleteFileFolderModal
             show={showDeleteModal}
-            item={itemToDelete}
+            item={itemToDelete?.length === 1 ? itemToDelete[0] : { title: `${itemToDelete?.length} items` }}
             onDelete={handleDelete}
             onCancel={cancelDelete}
           />
