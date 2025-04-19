@@ -6,10 +6,11 @@ import FolderCard from '../Components/FolderCard'
 import MoveFileFolderModal from '../Components/MoveFileFolderModal'
 import CopyFileFolderModal from '../Components/CopyFileFolderModal'
 import DeleteFileFolderModal from '../Components/DeleteFileFolderModal'
-import FileFolderManager from '../Hooks/FileFolderManager'
+import useFileFolderManager from '../Hooks/useFileFolderManager'
 import { Link, useLocation } from 'react-router-dom'
 import cardData from '../Data/CardData'
 import PaginationComponent from '../Components/PaginationComponent'
+import Breadcrumb from '../Components/Breadcrumb'
 
 
 const Homepage = () => {
@@ -17,7 +18,7 @@ const Homepage = () => {
   const {itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, totalPages,currentItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
     itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
     itemToDelete, setItemToDelete, cards, setCards,  topLevelItems, handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
-    handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMove, cancelDelete, handleCopy} = FileFolderManager();
+    handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMove, cancelDelete, handleCopy} = useFileFolderManager();
 
  
     const location = useLocation();
@@ -50,28 +51,7 @@ const Homepage = () => {
                         {/*breadcrump */}
                         <div className='flex flex-col lg:flex-row lg:justify-between'>
 
-                        <div className="breadcrumbs text-xs lg:text-sm">
-                              <ul className="flex gap-2">
-                                <li><Link to="/">🏠 Home</Link></li>
-                                {pathnames.map((title, index) => {
-                                  const routeTo = '/' + pathnames.slice(0,1).join('/');
-                                  const isLast = index === pathnames.length - 1;
-                                
-                                  // Convert title to number for correct match
-                                  const matched = cardData.find((item) => item.id === Number(title));
-                                  const displayName = matched?.title || title;
-                                  return (
-                                    <li key={index}>
-                                      {isLast ? (
-                                        <span className="text-gray-500">{displayName}</span>
-                                      ) : (
-                                        <Link to={routeTo}>{displayName}</Link>
-                                      )}
-                                    </li>
-                                  );
-                                })}
-                              </ul>
-                            </div>
+                        <Breadcrumb location={location} pathnames={pathnames}></Breadcrumb>
 
                             <div>
                               <ul className='flex flex-row gap-7 lg:justify-around text-xs'>

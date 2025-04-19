@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react'
 import {  useParams } from 'react-router-dom';
 import FolderCard from '../Components/FolderCard';
@@ -5,21 +6,22 @@ import MoveFileFolderModal from '../Components/MoveFileFolderModal';
 import CopyFileFolderModal from '../Components/CopyFileFolderModal';
 import DeleteFileFolderModal from '../Components/DeleteFileFolderModal';
 
-import FileFolderManager from '../Hooks/FileFolderManager';
+import useFileFolderManager from '../Hooks/useFileFolderManager';
 import { Link, useLocation } from 'react-router-dom'
 import cardData from '../Data/CardData';
+import PaginationComponent from '../Components/PaginationComponent';
 
 const FolderItems = () => {
 
 
-  const {activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
+  const {handleItemsPerPageChangeinFiles , changePageinFiles ,paginatedTopLevelItemsinFiles,currentItemsinFiles,totalPagesinFiles,itemsPerPageinFiles, setItemsPerPageinFiles, currentPageinFiles, setCurrentPageinFiles,handleSortinFiles,sortOrderinFiles, setSortOrderinFiles, sortByinFiles, setSortByinFiles,sortedItemsinFiles,items, setItems, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, changePage,totalPages,currentItems,paginatedTopLevelItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
     itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
     itemToDelete, setItemToDelete, cards, setCards,  handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
-    handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMoveInFolders, cancelDelete, handleCopy} = FileFolderManager();
+    handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMoveInFolders, cancelDelete, handleCopy} = useFileFolderManager();
 
   const { id } = useParams();
   const [folder, setFolder] = useState(null);
-  const [items, setItems] = useState([]);
+  
     
   const location = useLocation();
     const pathnames = location.pathname.split('/').filter(x => x);
@@ -46,6 +48,12 @@ const FolderItems = () => {
 
  
 
+  
+  
+  
+  
+  
+  
  
 
   
@@ -115,41 +123,7 @@ const FolderItems = () => {
                                         </div>
                                     </li>
                                 </ul>
-                                <ul className='flex flex-row gap-3'>
-                                    <div className="join">
-                                        <button className="join-item btn btn-xs">«</button>
-                                        <button className="join-item btn btn-xs">Page 22</button>
-                                        <button className="join-item btn btn-xs">»</button>
-                                    </div>
-                                    <div className='flex flex-row'>
-                                    <h6>Page:</h6>
-                                    <div className="dropdown ">
-                                                <div tabIndex={0} role="button" className="text:xs lg:text-sm border-1  rounded-sm lg:btn-sm">1 ▼</div>
-                                                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                                                    <li><a href=''>Item 1</a></li>
-                                                    <li><a href=''>Item 2</a></li>
-                                                </ul>
-                                        </div>
-                                    </div>
-                                    <div className='flex flex-row gap-1'>
-                                    <h6>Sort by:</h6>
-                                    <div className="dropdown ">
-                                                <div tabIndex={0} role="button" className=" text-xs lg:text-sm border-1 rounded-sm lg:btn-sm w-15 lg:w-25  flex justify-between "><span>Name</span> <span>▼</span> </div>
-                                                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                                                    <li><a>Item 1</a></li>
-                                                    <li><a>Item 2</a></li>
-                                                </ul>
-                                        </div>
-                                        <div className="dropdown dropdown-end">
-                                                <div tabIndex={0} role="button" className=" text-xs lg:text-sm border-1 rounded-sm lg:btn-sm w-15 lg:w-25  flex justify-between "><span>50</span> <span>▼</span> </div>
-                                                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                                                    <li><a>Item 1</a></li>
-                                                    <li><a>Item 2</a></li>
-                                                </ul>
-                                        </div>
-                                    </div>
-
-                                </ul>
+                                <PaginationComponent currentPage={currentPageinFiles} totalPages={totalPagesinFiles} onPageChange={setCurrentPageinFiles} handleSort={handleSortinFiles} sortBy={sortByinFiles} sortOrder={sortOrder} handleItemsPerPageChange={handleItemsPerPageChangeinFiles } itemsPerPage={itemsPerPageinFiles}></PaginationComponent>
                             </div>
                             
 
@@ -168,7 +142,7 @@ const FolderItems = () => {
                           });
                           }
                       }}>
-                      {items.map(item => (
+                      {currentItemsinFiles.map(item => (
                         <FolderCard key={item.id} item={item} onRightClick={handleRightClick} onSelect={handleSelectItem}
                         isSelected={selectedItems.some(i => i.id === item.id)}/>
                       ))}
