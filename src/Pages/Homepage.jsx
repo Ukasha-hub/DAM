@@ -9,11 +9,12 @@ import DeleteFileFolderModal from '../Components/DeleteFileFolderModal'
 import FileFolderManager from '../Hooks/FileFolderManager'
 import { Link, useLocation } from 'react-router-dom'
 import cardData from '../Data/CardData'
+import PaginationComponent from '../Components/PaginationComponent'
 
 
 const Homepage = () => {
 
-  const {activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
+  const {itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, totalPages,currentItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
     itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
     itemToDelete, setItemToDelete, cards, setCards,  topLevelItems, handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
     handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMove, cancelDelete, handleCopy} = FileFolderManager();
@@ -100,41 +101,7 @@ const Homepage = () => {
                                         </div>
                                     </li>
                                 </ul>
-                                <ul className='flex flex-row gap-3'>
-                                    <div className="join">
-                                        <button className="join-item btn btn-xs">«</button>
-                                        <button className="join-item btn btn-xs">Page 22</button>
-                                        <button className="join-item btn btn-xs">»</button>
-                                    </div>
-                                    <div className='flex flex-row'>
-                                    <h6>Page:</h6>
-                                    <div className="dropdown ">
-                                                <div tabIndex={0} role="button" className="text:xs lg:text-sm border-1  rounded-sm lg:btn-sm">1 ▼</div>
-                                                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                                                    <li><a href=''>Item 1</a></li>
-                                                    <li><a href=''>Item 2</a></li>
-                                                </ul>
-                                        </div>
-                                    </div>
-                                    <div className='flex flex-row gap-1'>
-                                    <h6>Sort by:</h6>
-                                    <div className="dropdown ">
-                                                <div tabIndex={0} role="button" className=" text-xs lg:text-sm border-1 rounded-sm lg:btn-sm w-15 lg:w-25  flex justify-between "><span>Name</span> <span>▼</span> </div>
-                                                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                                                    <li><a>Item 1</a></li>
-                                                    <li><a>Item 2</a></li>
-                                                </ul>
-                                        </div>
-                                        <div className="dropdown dropdown-end">
-                                                <div tabIndex={0} role="button" className=" text-xs lg:text-sm border-1 rounded-sm lg:btn-sm w-15 lg:w-25  flex justify-between "><span>50</span> <span>▼</span> </div>
-                                                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                                                    <li><a>Item 1</a></li>
-                                                    <li><a>Item 2</a></li>
-                                                </ul>
-                                        </div>
-                                    </div>
-
-                                </ul>
+                                <PaginationComponent currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} handleSort={handleSort} sortBy={sortBy} sortOrder={sortOrder} handleItemsPerPageChange={handleItemsPerPageChange } itemsPerPage={itemsPerPage}></PaginationComponent>
                             </div>
                             
 
@@ -158,7 +125,7 @@ const Homepage = () => {
                             >
                             {/* Grid inside */}
                             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 p-4">
-                                {topLevelItems.map((item) => (
+                                {currentItems.map((item) => (
                                 <FolderCard key={item.id} item={item} onRightClick={handleRightClick} onSelect={handleSelectItem}
                                 isSelected={selectedItems.some(i => i.id === item.id)} />
                                 ))}

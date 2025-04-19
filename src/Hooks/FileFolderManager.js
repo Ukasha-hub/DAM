@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import cardData from "../Data/CardData";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const FileFolderManager = () =>{
        
@@ -23,13 +23,72 @@ const FileFolderManager = () =>{
         return saved ? JSON.parse(saved) : cardData;
       });
 
+
+     
+
        //moved files or folders will be hidden from top level
-    const topLevelItems = cards.filter(item =>
-        !cards.some(card =>
-        card.folderORfile === 'folder' &&
-        card.folderItems.includes(item.id)
-        )
-    );
+       const topLevelItems = useMemo(() => {
+        return cards.filter(item =>
+          !cards.some(card =>
+            card.folderORfile === 'folder' &&
+            card.folderItems.includes(item.id)
+          )
+        );
+      }, [cards]);
+
+    
+    
+
+    const [sortBy, setSortBy] = useState("name"); // default sort
+const [sortOrder, setSortOrder] = useState("asc"); // ascending or descending
+
+const sortedItems = [...topLevelItems].sort((a, b) => {
+  if (sortBy === "name") {
+    const nameA = a.title.toLowerCase();
+    const nameB = b.title.toLowerCase();
+    return sortOrder === "asc" ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+  }
+  // Add more sorting options here
+  return 0;
+});
+
+const handleSort = (criteria) => {
+  if (sortBy === criteria) {
+    // Toggle order if same sort clicked
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  } else {
+    setSortBy(criteria);
+    setSortOrder("asc"); // default to ascending on new sort
+  }
+};
+
+
+
+ //Pagination handling 
+
+ const [currentPage, setCurrentPage] = useState(1);
+        
+ const [itemsPerPage, setItemsPerPage] = useState(5);
+ const totalPages = Math.ceil(sortedItems .length / itemsPerPage); // Calculate total pages
+   // Calculate start and end indices for current page
+   const startIndex = (currentPage - 1) * itemsPerPage;
+   const endIndex = startIndex + itemsPerPage;
+ const currentItems = sortedItems.slice(startIndex, endIndex);
+ const paginatedTopLevelItems = topLevelItems.slice(startIndex, endIndex);
+
+ 
+ 
+ // Change page function
+ const changePage = (page) => {
+   if (page > 1 && page <= totalPages) {
+     setCurrentPage(page);
+   }
+ };
+
+ const handleItemsPerPageChange = (count) => {
+  setItemsPerPage(count);
+  setCurrentPage(1); // Reset to page 1 when changing items per page
+};
 
     useEffect(() => {
         localStorage.setItem('cards', JSON.stringify(cards));
@@ -232,7 +291,7 @@ const FileFolderManager = () =>{
         
 
 
-        return{activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
+        return{itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, changePage,totalPages,currentItems,paginatedTopLevelItems , activeTab,  setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
             itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
             itemToDelete, setItemToDelete, cards, setCards,  topLevelItems, handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
             handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMove,handleMoveInFolders, cancelDelete, handleCopy}
