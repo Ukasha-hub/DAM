@@ -7,6 +7,8 @@ import MoveFileFolderModal from '../Components/MoveFileFolderModal'
 import CopyFileFolderModal from '../Components/CopyFileFolderModal'
 import DeleteFileFolderModal from '../Components/DeleteFileFolderModal'
 import FileFolderManager from '../Hooks/FileFolderManager'
+import { Link, useLocation } from 'react-router-dom'
+import cardData from '../Data/CardData'
 
 
 const Homepage = () => {
@@ -17,7 +19,23 @@ const Homepage = () => {
     handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMove, cancelDelete, handleCopy} = FileFolderManager();
 
  
-  
+    const location = useLocation();
+    const pathnames = location.pathname.split('/').filter(x => x);
+
+    const handleSelectAll = (items) => {
+      if (Array.isArray(items)) {
+        setSelectedItems((prevSelected) => {
+          if (prevSelected.length === items.length) {
+            return []; // Deselect all if all are already selected
+          } else {
+            return items.map(item => item); // Select all
+          }
+        });
+      } else {
+        console.error("Items is not an array", items);
+      }
+    };
+      
 
   
   return (
@@ -29,30 +47,46 @@ const Homepage = () => {
             <input type="radio" name="" className="tab" aria-label="Folder Content" checked={activeTab === "folder-content"} onChange={() => setActiveTab("folder-content")}/>
             <div className="tab-content bg-base-100 border-base-300 p-6">
                         {/*breadcrump */}
-                        <div className='flex flex-col lg:flex-row  lg:justify-between '>
-                            <div className="breadcrumbs text-xs lg:text-sm">
-                                <ul>
-                                    <li><a>Home</a></li>
-                                    <li><a>Documents</a></li>
-                                    <li>Add Document</li>
-                                </ul>
+                        <div className='flex flex-col lg:flex-row lg:justify-between'>
+
+                        <div className="breadcrumbs text-xs lg:text-sm">
+                              <ul className="flex gap-2">
+                                <li><Link to="/">🏠 Home</Link></li>
+                                {pathnames.map((title, index) => {
+                                  const routeTo = '/' + pathnames.slice(0,1).join('/');
+                                  const isLast = index === pathnames.length - 1;
+                                
+                                  // Convert title to number for correct match
+                                  const matched = cardData.find((item) => item.id === Number(title));
+                                  const displayName = matched?.title || title;
+                                  return (
+                                    <li key={index}>
+                                      {isLast ? (
+                                        <span className="text-gray-500">{displayName}</span>
+                                      ) : (
+                                        <Link to={routeTo}>{displayName}</Link>
+                                      )}
+                                    </li>
+                                  );
+                                })}
+                              </ul>
                             </div>
-                            <div className=''>
-                                    <ul className='flex flex-row gap-7 lg:justify-around text-xs'>
-                                        <li><a href="">Folder Subscribe</a></li>
-                                        <li><a href="">Folder Settings</a></li>
-                                        
-                                    </ul>
+
+                            <div>
+                              <ul className='flex flex-row gap-7 lg:justify-around text-xs'>
+                                <li><a href="">Folder Subscribe</a></li>
+                                <li><a href="">Folder Settings</a></li>
+                              </ul>
                             </div>
-                        </div>
+                          </div>
 
                         {/*buttons and paginations */}
                         <div>
                         <div className=" text-xs mt-1 lg:text-sm flex flex-col gap-1 lg:flex-row justify-evenly lg:justify-between">
                                 <ul className='flex flex-row gap-2 lg:gap-3 '>
                                     
-                                    <li><button onClick={() => navigate("/add-files")} className="btn-xs bg-green-300 p-1 rounded-sm">Add Files</button></li>
-                                    <li><a href="">Select all</a></li>
+                                    <li><button onClick={() => navigate("/add-files")} className="btn btn-xs bg-green-300 p-1 rounded-sm">Add Files</button></li>
+                                    <li><button className='btn btn-xs' onClick={()=>{handleSelectAll(cardData)}}>Select all</button></li>
                                     <li><a href="">Search within folder</a></li>
                                     
                                     

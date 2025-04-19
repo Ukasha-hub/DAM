@@ -6,6 +6,8 @@ import CopyFileFolderModal from '../Components/CopyFileFolderModal';
 import DeleteFileFolderModal from '../Components/DeleteFileFolderModal';
 
 import FileFolderManager from '../Hooks/FileFolderManager';
+import { Link, useLocation } from 'react-router-dom'
+import cardData from '../Data/CardData';
 
 const FolderItems = () => {
 
@@ -19,7 +21,8 @@ const FolderItems = () => {
   const [folder, setFolder] = useState(null);
   const [items, setItems] = useState([]);
     
-
+  const location = useLocation();
+    const pathnames = location.pathname.split('/').filter(x => x);
  
 
    
@@ -59,6 +62,98 @@ const FolderItems = () => {
             <div className="tabs tabs-lift">
             <input type="radio" name="" className="tab" aria-label="Folder Content" checked={activeTab === "folder-content"} onChange={() => setActiveTab("folder-content")}/>
             <div className='tab-content bg-base-100 border-base-300 p-4'>
+              {/*breadcrump */}
+              <div className='flex flex-col lg:flex-row lg:justify-between'>
+                            <div className="breadcrumbs text-xs lg:text-sm">
+                              <ul className="flex gap-2">
+                                <li><Link to="/">🏠 Home</Link></li>
+                                {pathnames.map((title, index) => {
+                                  const routeTo = '/' + pathnames.slice(0,1).join('/');
+                                  const isLast = index === pathnames.length - 1;
+                                
+                                  // Convert title to number for correct match
+                                  const matched = cardData.find((item) => item.id === Number(title));
+                                  const displayName = matched?.title || title;
+                                  return (
+                                    <li key={index}>
+                                      {isLast ? (
+                                        <span className="text-gray-500">{displayName}</span>
+                                      ) : (
+                                        <Link to={routeTo}>{displayName}</Link>
+                                      )}
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            </div>
+
+                            <div>
+                              <ul className='flex flex-row gap-7 lg:justify-around text-xs'>
+                                <li><a href="">Folder Subscribe</a></li>
+                                <li><a href="">Folder Settings</a></li>
+                              </ul>
+                            </div>
+                          </div>
+
+                        {/*buttons and paginations */}
+                        <div>
+                        <div className=" text-xs mt-1 lg:text-sm flex flex-col gap-1 lg:flex-row justify-evenly lg:justify-between">
+                                <ul className='flex flex-row gap-2 lg:gap-3 '>
+                                    
+                                    <li><button onClick={() => navigate("/add-files")} className="btn-xs bg-green-300 p-1 rounded-sm">Add Files</button></li>
+                                    <li><a href="">Select all</a></li>
+                                    <li><a href="">Search within folder</a></li>
+                                    
+                                    
+                                    <li>
+                                        <div className="dropdown ">
+                                                <div tabIndex={0} role="button" className="text-xs lg:text-sm lg:btn-sm ">More actions ▼</div>
+                                                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                                                    <li><a>Item 1</a></li>
+                                                    <li><a>Item 2</a></li>
+                                                </ul>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <ul className='flex flex-row gap-3'>
+                                    <div className="join">
+                                        <button className="join-item btn btn-xs">«</button>
+                                        <button className="join-item btn btn-xs">Page 22</button>
+                                        <button className="join-item btn btn-xs">»</button>
+                                    </div>
+                                    <div className='flex flex-row'>
+                                    <h6>Page:</h6>
+                                    <div className="dropdown ">
+                                                <div tabIndex={0} role="button" className="text:xs lg:text-sm border-1  rounded-sm lg:btn-sm">1 ▼</div>
+                                                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                                                    <li><a href=''>Item 1</a></li>
+                                                    <li><a href=''>Item 2</a></li>
+                                                </ul>
+                                        </div>
+                                    </div>
+                                    <div className='flex flex-row gap-1'>
+                                    <h6>Sort by:</h6>
+                                    <div className="dropdown ">
+                                                <div tabIndex={0} role="button" className=" text-xs lg:text-sm border-1 rounded-sm lg:btn-sm w-15 lg:w-25  flex justify-between "><span>Name</span> <span>▼</span> </div>
+                                                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                                                    <li><a>Item 1</a></li>
+                                                    <li><a>Item 2</a></li>
+                                                </ul>
+                                        </div>
+                                        <div className="dropdown dropdown-end">
+                                                <div tabIndex={0} role="button" className=" text-xs lg:text-sm border-1 rounded-sm lg:btn-sm w-15 lg:w-25  flex justify-between "><span>50</span> <span>▼</span> </div>
+                                                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
+                                                    <li><a>Item 1</a></li>
+                                                    <li><a>Item 2</a></li>
+                                                </ul>
+                                        </div>
+                                    </div>
+
+                                </ul>
+                            </div>
+                            
+
+                        </div>
                 <div className=" p-6  grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"
                     onContextMenu={(e) => {
                         // Only show blank menu if clicked outside item

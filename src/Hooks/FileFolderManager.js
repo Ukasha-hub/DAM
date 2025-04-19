@@ -37,15 +37,16 @@ const FileFolderManager = () =>{
 
       const handleSelectItem = (item) => {
         setSelectedItems((prevSelected) => {
-          const isAlreadySelected = prevSelected.some(i => i.id === item.id);
-          if (isAlreadySelected) {
+          const exists = prevSelected.find(i => i.id === item.id);
+          if (exists) {
             return prevSelected.filter(i => i.id !== item.id);
           } else {
             return [...prevSelected, item];
           }
         });
       };
-
+      
+      
 
       
       
