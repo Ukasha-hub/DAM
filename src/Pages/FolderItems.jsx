@@ -10,6 +10,7 @@ import useFileFolderManager from '../Hooks/useFileFolderManager';
 import { Link, useLocation } from 'react-router-dom'
 import cardData from '../Data/CardData';
 import PaginationComponent from '../Components/PaginationComponent';
+import Breadcrumb from '../Components/Breadcrumb';
 
 const FolderItems = () => {
 
@@ -48,19 +49,6 @@ const FolderItems = () => {
 
  
 
-  
-  
-  
-  
-  
-  
- 
-
-  
-
- 
-  
-
   return (
     <div>
 
@@ -73,26 +61,7 @@ const FolderItems = () => {
               {/*breadcrump */}
               <div className='flex flex-col lg:flex-row lg:justify-between'>
                             <div className="breadcrumbs text-xs lg:text-sm">
-                              <ul className="flex gap-2">
-                                <li><Link to="/">🏠 Home</Link></li>
-                                {pathnames.map((title, index) => {
-                                  const routeTo = '/' + pathnames.slice(0,1).join('/');
-                                  const isLast = index === pathnames.length - 1;
-                                
-                                  // Convert title to number for correct match
-                                  const matched = cardData.find((item) => item.id === Number(title));
-                                  const displayName = matched?.title || title;
-                                  return (
-                                    <li key={index}>
-                                      {isLast ? (
-                                        <span className="text-gray-500">{displayName}</span>
-                                      ) : (
-                                        <Link to={routeTo}>{displayName}</Link>
-                                      )}
-                                    </li>
-                                  );
-                                })}
-                              </ul>
+                            <Breadcrumb location={location} pathnames={pathnames}></Breadcrumb>
                             </div>
 
                             <div>
