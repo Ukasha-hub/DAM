@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom';
 
 const Topbar = () => {
   
@@ -9,7 +10,8 @@ const Topbar = () => {
                 <div className="navbar bg-base-100 shadow-sm flex justify-between">
                     <div className='flex flex-row lg:gap-20 '>
                         <div className="">
-                            <a className="btn btn-ghost text-sm lg:text-xl">DAM</a>
+                            <Link  to="/"> <a className="btn btn-ghost text-sm lg:text-xl">DAM</a></Link>
+                           
                         </div>
                         <div className="flex gap-2 bg-gray-200 p-1 rounded-md">
                             <input type="text" placeholder="Quick Search" className="input input-bordered h-8 mt-1  w-20 md:w-40 lg:w-60" />
