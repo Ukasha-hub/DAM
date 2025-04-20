@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import { FaChevronDown, FaChevronRight, FaFolder } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 
 const FolderList = ({ folder, cards }) => {
   const [isOpen, setIsOpen] = useState(false);
   const hasSubfolders = folder.folderItems && folder.folderItems.length > 0;
+
+  const navigate = useNavigate();
 
   // Find the corresponding objects for each folderItem ID
   const folderItemObjects = folder.folderItems.map(id => {
@@ -23,7 +26,7 @@ const FolderList = ({ folder, cards }) => {
           </span>
         )}
         <FaFolder className="text-yellow-500 mr-2" />
-        <span>{folder.title}</span>
+        <span onClick={() => navigate(`/folderitem/${folder.id}`)}>{folder.title}</span>
       </div>
 
       {isOpen && hasSubfolders && (
