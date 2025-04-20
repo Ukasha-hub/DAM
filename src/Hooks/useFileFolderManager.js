@@ -70,7 +70,7 @@ const handleSort = (criteria) => {
 
  const [currentPage, setCurrentPage] = useState(1);
         
- const [itemsPerPage, setItemsPerPage] = useState(10);
+ const [itemsPerPage, setItemsPerPage] = useState(15);
  const totalPages = Math.ceil(sortedItems .length / itemsPerPage); // Calculate total pages
    // Calculate start and end indices for current page
    const startIndex = (currentPage - 1) * itemsPerPage;
@@ -116,7 +116,7 @@ const handleSortinFiles = (criteria) => {
 
 const [currentPageinFiles, setCurrentPageinFiles] = useState(1);
         
- const [itemsPerPageinFiles, setItemsPerPageinFiles] = useState(5);
+ const [itemsPerPageinFiles, setItemsPerPageinFiles] = useState(15);
  const totalPagesinFiles = Math.ceil(sortedItemsinFiles .length / itemsPerPageinFiles); // Calculate total pages
    // Calculate start and end indices for current page
    const startIndexinFiles = (currentPageinFiles - 1) * itemsPerPageinFiles;
@@ -319,7 +319,8 @@ const [currentPageinFiles, setCurrentPageinFiles] = useState(1);
             const copiedItem = {
               ...originalItem,
               id: newId,
-              title: `${originalItem.title} (copy)`
+              title: `${originalItem.title} (copy)`,
+              originalId: originalItem.id
             };
         
             if (targetFolderId !== 'null') {

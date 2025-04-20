@@ -1,31 +1,41 @@
 import React, { useState } from 'react'
+import { FaChevronDown, FaChevronRight, FaFolder } from 'react-icons/fa';
 
 
-const FolderList = ({folder}) => {
-  
-const [isOpen, setIsOpen] = useState(false);
+const FolderList = ({ folder, cards }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const hasSubfolders = folder.folderItems && folder.folderItems.length > 0;
+
+  // Find the corresponding objects for each folderItem ID
+  const folderItemObjects = folder.folderItems.map(id => {
+    return cards.find(item => item.id === id);
+  }).filter(item => item !== undefined); // Make sure to remove undefined items if any ID doesn't match
 
   return (
-    <div className="ml-4">
-      <button onClick={() => setIsOpen(!isOpen)} className="flex text-xs w-full lg:text-md items-center gap-1">
-        {/* Show an arrow only if the folder has children */}
-        {folder.children && folder.children.length > 0 ? (
-          <span>{isOpen ? "📂 v" : "📁 >"}</span>
-        ) : (
-          <span>📁</span> // No arrow for folders without children
+    <div className="ml-2 mb-1">
+      <div
+        className="flex items-center cursor-pointer"
+        onClick={() => hasSubfolders && setIsOpen(!isOpen)}
+      >
+        {hasSubfolders && (
+          <span className="mr-1">
+            {isOpen ? <FaChevronDown size={12} /> : <FaChevronRight size={12} />}
+          </span>
         )}
-        {folder.name}
-      </button>
+        <FaFolder className="text-yellow-500 mr-2" />
+        <span>{folder.title}</span>
+      </div>
 
-      {isOpen && folder.children && (
-        <div className="ml-4">
-          {folder.children.map((child, index) => (
-            <FolderList key={index} folder={child} />
-          ))}
+      {isOpen && hasSubfolders && (
+        <div className="ml-4 border-l pl-2 mt-1">
+          {folderItemObjects.map(sub => {
+            if (sub.folderORfile === "folder") {
+              return <FolderList key={sub.id} folder={sub} cards={cards} />;
+            } 
+          })}
         </div>
       )}
     </div>
-  )
-}
-
+  );
+};     
 export default FolderList

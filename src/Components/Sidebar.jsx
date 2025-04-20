@@ -9,6 +9,10 @@ import folderData from '../Data/FolderData';
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [cards, setCards] = useState(() => {
+        const saved = localStorage.getItem('cards');
+        return saved ? JSON.parse(saved) : cardData;
+      });
   return (
     <div>
         {/*hamburger menu */}
@@ -23,10 +27,14 @@ const Sidebar = () => {
                 <div className="flex flex-col lg:hidden">
                     <div className="divide-y divide-gray-300">
                     <h2 className=" text-xs lg:text-md mb-1">Folders</h2>
-                    {folderData.map((folder, index) => (
-                        <FolderList key={index} folder={folder} />
-                    ))}
-                    
+                    {cards
+  .filter(item => item.folderORfile === "folder" && !cards.some(parent => 
+    Array.isArray(parent.folderItems) && parent.folderItems.includes(item.id)
+  ))
+  .map((folder, index) => (
+    <FolderList key={index} folder={folder} cards={cards} />
+))}
+                                        
                 </div>
                         
                 </div>
@@ -39,9 +47,13 @@ const Sidebar = () => {
                
                 <div className="divide-y divide-gray-300">
                     <h2 className=" text-md mb-2">Folders</h2>
-                    {folderData.map((folder, index) => (
-                        <FolderList key={index} folder={folder} />
-                    ))}
+                    {cards
+  .filter(item => item.folderORfile === "folder" && !cards.some(parent => 
+    Array.isArray(parent.folderItems) && parent.folderItems.includes(item.id)
+  ))
+  .map((folder, index) => (
+    <FolderList key={index} folder={folder} cards={cards} />
+))}
                     
                 </div>
             </div>
