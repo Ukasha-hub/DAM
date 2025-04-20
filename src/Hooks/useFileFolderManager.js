@@ -70,7 +70,7 @@ const handleSort = (criteria) => {
 
  const [currentPage, setCurrentPage] = useState(1);
         
- const [itemsPerPage, setItemsPerPage] = useState(5);
+ const [itemsPerPage, setItemsPerPage] = useState(10);
  const totalPages = Math.ceil(sortedItems .length / itemsPerPage); // Calculate total pages
    // Calculate start and end indices for current page
    const startIndex = (currentPage - 1) * itemsPerPage;

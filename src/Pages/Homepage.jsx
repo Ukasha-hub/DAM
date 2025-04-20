@@ -68,7 +68,7 @@ const Homepage = () => {
                                     
                                     <li><button onClick={() => navigate("/add-files")} className="btn btn-xs bg-green-300 p-1 rounded-sm">Add Files</button></li>
                                     <li><button className='btn btn-xs' onClick={()=>{handleSelectAll(cardData)}}>Select all</button></li>
-                                    <li><a href="">Search within folder</a></li>
+                                    
                                     
                                     
                                     <li>

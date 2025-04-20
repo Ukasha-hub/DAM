@@ -27,7 +27,19 @@ const FolderItems = () => {
   const location = useLocation();
     const pathnames = location.pathname.split('/').filter(x => x);
  
-
+    const handleSelectAll = (items) => {
+      if (Array.isArray(items)) {
+        setSelectedItems((prevSelected) => {
+          if (prevSelected.length === items.length) {
+            return []; // Deselect all if all are already selected
+          } else {
+            return items.map(item => item); // Select all
+          }
+        });
+      } else {
+        console.error("Items is not an array", items);
+      }
+    };
    
 
   useEffect(() => {
@@ -78,7 +90,7 @@ const FolderItems = () => {
                                 <ul className='flex flex-row gap-2 lg:gap-3 '>
                                     
                                     <li><button onClick={() => navigate("/add-files")} className="btn-xs bg-green-300 p-1 rounded-sm">Add Files</button></li>
-                                    <li><a href="">Select all</a></li>
+                                    <li><button className='btn btn-xs' onClick={()=>{handleSelectAll(items)}}>Select all</button></li>
                                     <li><a href="">Search within folder</a></li>
                                     
                                     
