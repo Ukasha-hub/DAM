@@ -191,6 +191,29 @@ const Homepage = () => {
                                           </li>
                                           <li
                                             className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                            onClick={() => {
+                                              const itemToRename = selectedItems.length ? selectedItems[0] : contextMenu.item;
+                                              const newName = prompt("Enter new name:", itemToRename?.title || "");
+                                              if (newName) {
+                                                const data = JSON.parse(localStorage.getItem("cards")) || [];
+                                                
+                                                const updatedData = data.map(item =>
+                                                  item.id === itemToRename.id ? { ...item, title: newName } : item
+                                                );
+                                                  localStorage.setItem("cards", JSON.stringify(updatedData));
+                                                  setCards(updatedData);
+                                                  window.location.reload();
+
+                                                  
+                                                
+                                              }
+                                              setContextMenu(prev => ({ ...prev, visible: false }));
+                                            }}
+                                          >
+                                            Rename
+                                          </li>
+                                          <li
+                                            className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
                                             onClick={() => confirmDelete(selectedItems)}
                                           >
                                             Delete

@@ -126,7 +126,7 @@ console.log(contextMenu)
       </ul>
       <PaginationComponent currentPage={currentPageinFiles} totalPages={totalPagesinFiles} onPageChange={setCurrentPageinFiles} handleSort={handleSortinFiles} sortBy={sortByinFiles} sortOrder={sortOrder} handleItemsPerPageChange={handleItemsPerPageChangeinFiles } itemsPerPage={itemsPerPageinFiles}></PaginationComponent>
   </div>
-  <div className='flex justify-center pt-50'>Folder is empty</div>
+  <div className='flex justify-center pt-50'><div className='pb-30'>Folder is empty</div></div>
    {/* Context menu */}
    {contextMenu.visible && (
                                     <ul
@@ -352,6 +352,34 @@ console.log(contextMenu)
                                           >
                                             Copy
                                           </li>
+                                          <li
+                                            className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                            onClick={() => {
+                                              const itemToRename = selectedItems.length ? selectedItems[0] : contextMenu.item;
+                                              const newName = prompt("Enter new name:", itemToRename?.title || "");
+                                              if (newName) {
+                                                const data = JSON.parse(localStorage.getItem("cards")) || [];
+                                                const index = data.findIndex(item => item.id === itemToRename.id);
+                                                if (index !== -1) {
+                                                  data[index].title = newName;
+                                                  localStorage.setItem("cards", JSON.stringify(data));
+                                                  setCards(data);
+
+                                                  // Update items in current folder
+                                                  const parentFolderIndex = data.findIndex(item => item.id === parseInt(id));
+                                                  const updatedChildItems = data.filter(item =>
+                                                    data[parentFolderIndex]?.folderItems.includes(item.id)
+                                                  );
+                                                  setItems(updatedChildItems);
+                                                  window.location.reload();
+                                                }
+                                              }
+                                              setContextMenu(prev => ({ ...prev, visible: false }));
+                                            }}
+                                          >
+                                            Rename
+                                          </li>
+
                                           <li
                                             className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
                                             onClick={() => confirmDelete(selectedItems)}
