@@ -10,7 +10,7 @@ const Topbar = () => {
                 <div className="navbar bg-base-100 shadow-sm flex justify-between">
                     <div className='flex flex-row lg:gap-20 '>
                         <div className="">
-                            <Link  to="/"> <a className="btn btn-ghost text-sm lg:text-xl">DAM</a></Link>
+                        <Link to="/" className="btn btn-ghost text-sm lg:text-xl">DAM</Link>
                            
                         </div>
                         <div className="flex gap-2 bg-gray-200 p-1 rounded-md">

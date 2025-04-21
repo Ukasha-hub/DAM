@@ -4,6 +4,8 @@ import { TbLayoutDashboardFilled } from "react-icons/tb";
 
 import FolderList from './FolderList';
 import folderData from '../Data/FolderData';
+import cardData from "../Data/CardData";
+import { Link } from 'react-router-dom';
 
 
 
@@ -46,13 +48,15 @@ const Sidebar = () => {
                 
                
                 <div className="divide-y divide-gray-300">
-                    <h2 className=" text-md mb-2">Folders</h2>
+                  <Link to='/'><h2 className=" text-md mb-2">🏠 HomePage</h2></Link>
+                  <hr/>
+                    
                     {cards
   .filter(item => item.folderORfile === "folder" && !cards.some(parent => 
     Array.isArray(parent.folderItems) && parent.folderItems.includes(item.id)
   ))
   .map((folder, index) => (
-    <FolderList key={index} folder={folder} cards={cards} />
+    <FolderList className="" key={index} folder={folder} cards={cards} />
 ))}
                     
                 </div>

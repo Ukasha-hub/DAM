@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import cardData from "../Data/CardData";
 import { useEffect, useMemo, useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 const useFileFolderManager = () =>{
        
@@ -307,15 +308,21 @@ const [currentPageinFiles, setCurrentPageinFiles] = useState(1);
           setShowDeleteModal(false);
           setItemToDelete(null);
         };
+
+        
       
-        const handleCopy = (originalItems, targetFolderId) => {
+        const handleCopy = async(originalItems, targetFolderId) => {
           const updatedCards = [...cards];
+
+          setTimeout(() => {
+            navigate(`/folderitem/${destinationFolderId}`);
+          }, 100);
         
           // Ensure originalItems is always an array
           const itemsToCopy = Array.isArray(originalItems) ? originalItems : [originalItems];
         
           itemsToCopy.forEach(originalItem => {
-            const newId = crypto.randomUUID();// or use a proper ID generator
+            const newId = uuidv4();// or use a proper ID generator
             const copiedItem = {
               ...originalItem,
               id: newId,

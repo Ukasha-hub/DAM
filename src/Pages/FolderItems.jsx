@@ -56,7 +56,7 @@ const FolderItems = () => {
     }
   }, [id]);
 
-  if (!folder) return <div className="p-4">Folder not found.</div>;
+  //if (!folder) return <div className="p-4">Folder not found.</div>;
 
 
 

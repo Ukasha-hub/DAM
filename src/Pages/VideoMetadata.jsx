@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom';
 import cardData from '../Data/CardData';
+import useFileFolderManager from '../Hooks/useFileFolderManager';
+
 
 function VideoMetadata() {
    
@@ -8,9 +10,9 @@ function VideoMetadata() {
 
   const { id } = useParams();
 
-  
+  const {cards, setCards} = useFileFolderManager();
 
-  const Item = cardData.find(item => item.id == id);
+  const Item = cards.find(item => item.id == id);
 
   console.log('ID from URL:', id);
   console.log('Filtered Item:', Item);
