@@ -342,6 +342,7 @@ const [currentPageinFiles, setCurrentPageinFiles] = useState(1);
         
           setCards(updatedCards);
           localStorage.setItem('cards', JSON.stringify(updatedCards));
+          window.location.reload();
         };
         
 

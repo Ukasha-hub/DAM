@@ -67,7 +67,7 @@ const Homepage = () => {
                                 <ul className='flex flex-row gap-2 lg:gap-3 '>
                                     
                                     <li><button onClick={() => navigate("/add-files")} className="btn btn-xs bg-green-300 p-1 rounded-sm">Add Files</button></li>
-                                    <li><button className='btn btn-xs' onClick={()=>{handleSelectAll(cardData)}}>Select all</button></li>
+                                    <li><button className='btn btn-xs' onClick={()=>{handleSelectAll(cards)}}>Select all</button></li>
                                     
                                     
                                     
@@ -88,7 +88,7 @@ const Homepage = () => {
                         </div>
                         {/*cards of folders */}
                        <div
-                            className="relative min-h-screen"
+                            className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 p-10 "
                             onContextMenu={(e) => {
                                 // Only show blank menu if clicked outside item
                                 if (e.target === e.currentTarget) {
@@ -104,65 +104,101 @@ const Homepage = () => {
                             }}
                             >
                             {/* Grid inside */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 p-4">
+                            
                                 {currentItems.map((item) => (
                                 <FolderCard key={item.id} item={item} onRightClick={handleRightClick} onSelect={handleSelectItem}
                                 isSelected={selectedItems.some(i => i.id === item.id)} />
                                 ))}
-                            </div>
+                           
 
-                            {/* Context menu */}
-                            {contextMenu.visible && (
-                                <ul
-                                  className="fixed bg-white border p-3 flex flex-col gap-2 rounded shadow-lg text-sm z-50"
-                                  style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
-                                >
-                                  {contextMenu.type === 'folder' && (
-                                    <li 
-                                      className=" hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                      onClick={handleOpenFileItems}
+                              {/* Context menu */}
+                              {contextMenu.visible && (
+                                    <ul
+                                      className="fixed bg-white border p-3 flex flex-col gap-2 rounded shadow-lg text-sm z-50"
+                                      style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
                                     >
-                                      Open Folder
-                                    </li>
+                                      {contextMenu.type === 'blank' ? (
+                                        <li
+                                          className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                          onClick={async () => {
+                                            const createFolder = async () => {
+                                              const data = JSON.parse(localStorage.getItem("cards")) || [];
+                                          
+                                              const newFolder = {
+                                                id: Date.now(),
+                                                title: "New Folder",
+                                                folderORfile: "folder",
+                                                image: "https://www.iconpacks.net/icons/2/free-folder-icon-1485-thumb.png",
+                                                folderItems: [],
+                                                
+                                              };
+                                          
+                                              data.push(newFolder);
+                                          
+                                             
+                                          
+                                              localStorage.setItem("cards", JSON.stringify(data));
+                                          
+                                              // Update local state
+                                              
+                                              setContextMenu(prev => ({ ...prev, visible: false }));
+                                              window.location.reload();
+                                            };
+                                          
+                                            await createFolder();
+                                          }}
+                                          
+                                        >
+                                          ➕ Create New Folder
+                                        </li>
+                                      ) : (
+                                        <>
+                                          {contextMenu.type === 'folder' && (
+                                            <li
+                                              className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                              onClick={handleOpenFileItems}
+                                            >
+                                              Open Folder
+                                            </li>
+                                          )}
+                                          {contextMenu.type === 'file' && (
+                                            <li
+                                              className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                              onClick={handleOpenMetadata}
+                                            >
+                                              Open Meta
+                                            </li>
+                                          )}
+                                          <li
+                                            className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                            onClick={() => {
+                                              const items = selectedItems.length ? selectedItems : [contextMenu.item];
+                                              setItemToMove(items);
+                                              setShowMoveModal(true);
+                                            }}
+                                          >
+                                            Move {contextMenu.type === 'folder' ? 'Folder' : 'File'}
+                                          </li>
+                                         
+                                          <li
+                                            className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                            onClick={() => {
+                                              setItemToCopy(selectedItems.length ? selectedItems : [contextMenu.item]);
+                                              setShowCopyModal(true);
+                                            }}
+                                          >
+                                            Copy
+                                          </li>
+                                          <li
+                                            className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                            onClick={() => confirmDelete(selectedItems)}
+                                          >
+                                            Delete
+                                          </li>
+                                        </>
+                                      )}
+                                    </ul>
                                   )}
-                                  {contextMenu.type === 'file' && (
-                                    <li 
-                                      className=" hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                      onClick={handleOpenMetadata}
-                                    >
-                                      Open Meta
-                                    </li>
-                                  )}
-
-                                  <li
-                                    className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                    onClick={() => {
-                                      const items = selectedItems.length ? selectedItems : [contextMenu.item];
-                                      setItemToMove(items);
-                                      setShowMoveModal(true);
-                                    }}
-                                  >
-                                    Move {contextMenu.type === 'folder' ? 'Folder' : 'File'}
-                                  </li>
-
-                                  <li
-                                    className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                    onClick={() => {
-                                      setItemToCopy(selectedItems.length ? selectedItems : [contextMenu.item]);
-                                      setShowCopyModal(true);
-                                    }}
-                                  >
-                                    Copy
-                                  </li>
-
-                                  <li 
-                                    className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                    onClick={() => confirmDelete(selectedItems)}
-                                  >
-                                    Delete
-                                  </li>
-                                </ul>
-                              )}
 
                         </div>
                     </div>

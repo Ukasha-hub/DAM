@@ -22,6 +22,17 @@ const FolderItems = () => {
 
   const { id } = useParams();
   const [folder, setFolder] = useState(null);
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (contextMenu.visible) {
+        setContextMenu(prev => ({ ...prev, visible: false }));
+      }
+    };
+    window.addEventListener("click", handleClickOutside);
+    return () => window.removeEventListener("click", handleClickOutside);
+  }, [contextMenu.visible]);
+  
   
     
   const location = useLocation();
@@ -56,12 +67,31 @@ const FolderItems = () => {
     }
   }, [id]);
 
-  //if (!folder) return <div className="p-4">Folder not found.</div>;
+  if (!folder) return <div className="p-4">Folder not found.</div>;
 
+console.log(contextMenu)
 
+  if (items.length === 0) return( 
+  
+  <div className="p-4" onContextMenu={(e) => {
+    e.preventDefault();
+    setContextMenu({
+      visible: true,
+      x: e.clientX,
+      y: e.clientY,
+      type: 'blank',
+      item: null,
+    });
+  }}
+> 
+  
+  <div className=' h-20 '>
+            {/* name of each tab group should be unique */}
+            <div className="tabs tabs-lift">
+            <input type="radio" name="" className="tab" aria-label="Folder Content" checked={activeTab === "folder-content"} onChange={() => setActiveTab("folder-content")}/>
+            <div className='tab-content bg-base-100 border-base-300 p-4'>
 
-  if (items.length === 0) return <div className="p-4"> 
-  <div className='flex flex-col lg:flex-row lg:justify-between'>
+            <div className='flex flex-col lg:flex-row lg:justify-between'>
   <div className="breadcrumbs text-xs lg:text-sm">
   <Breadcrumb location={location} pathnames={pathnames}></Breadcrumb>
   </div>
@@ -97,9 +127,74 @@ const FolderItems = () => {
       <PaginationComponent currentPage={currentPageinFiles} totalPages={totalPagesinFiles} onPageChange={setCurrentPageinFiles} handleSort={handleSortinFiles} sortBy={sortByinFiles} sortOrder={sortOrder} handleItemsPerPageChange={handleItemsPerPageChangeinFiles } itemsPerPage={itemsPerPageinFiles}></PaginationComponent>
   </div>
   <div className='flex justify-center pt-50'>Folder is empty</div>
+   {/* Context menu */}
+   {contextMenu.visible && (
+                                    <ul
+                                      className="fixed bg-white border p-3 flex flex-col gap-2 rounded shadow-lg text-sm z-50"
+                                      style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
+                                    >
+                                      {contextMenu.type === 'blank' ? (
+                                        <li
+                                          className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                          onClick={async () => {
+                                            const createFolder = async () => {
+                                              const data = JSON.parse(localStorage.getItem("cards")) || [];
+                                          
+                                              const newFolder = {
+                                                id: Date.now(),
+                                                title: "New Folder",
+                                                folderORfile: "folder",
+                                                image: "https://www.iconpacks.net/icons/2/free-folder-icon-1485-thumb.png",
+                                                folderItems: [],
+                                                parent: parseInt(id), // current folder as parent
+                                              };
+                                          
+                                              data.push(newFolder);
+                                          
+                                              const parentFolderIndex = data.findIndex(item => item.id === parseInt(id));
+                                              if (parentFolderIndex !== -1) {
+                                                const parentFolder = data[parentFolderIndex];
+                                                parentFolder.folderItems = parentFolder.folderItems || [];
+                                                parentFolder.folderItems.push(newFolder.id);
+                                              }
+                                          
+                                              localStorage.setItem("cards", JSON.stringify(data));
+                                          
+                                              // Update local state
+                                              setCards(data);
+                                              const updatedChildItems = data.filter(item =>
+                                                data[parentFolderIndex]?.folderItems.includes(item.id)
+                                              );
+                                              setItems(updatedChildItems);
+                                              setContextMenu(prev => ({ ...prev, visible: false }));
+                                              window.location.reload();
+                                            };
+                                          
+                                            await createFolder();
+                                          }}
+                                          
+                                        >
+                                          ➕ Create New Folder
+                                        </li>
+                                      ) : (
+                                        <></>
+                                      )}
+                                    </ul>
+                                  )}
+
 
 </div>
-</div>;
+
+
+
+              </div>
+            <input type="radio" name="my_tabs_3" className="tab" aria-label="Videos"  checked={activeTab === "videos"} onChange={() => setActiveTab("videos")}/>
+            <div className="tab-content bg-base-100 border-base-300 p-4">Tab content 2</div>  
+  
+</div>
+</div>
+</div>
+  )
 
  
 
@@ -151,7 +246,7 @@ const FolderItems = () => {
                             
 
                         </div>
-                <div className=" p-6  grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"
+                <div className=" p-10  grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"
                     onContextMenu={(e) => {
                         // Only show blank menu if clicked outside item
                         if (e.target === e.currentTarget) {
@@ -172,61 +267,107 @@ const FolderItems = () => {
 
                             {/* Context menu */}
                             {contextMenu.visible && (
-                                <ul
-                                  className="fixed bg-white border p-3 flex flex-col gap-2 rounded shadow-lg text-sm z-50"
-                                  style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
-                                >
-                                  {contextMenu.type === 'folder' && (
-                                    <li 
-                                      className=" hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                      onClick={handleOpenFileItems}
+                                    <ul
+                                      className="fixed bg-white border p-3 flex flex-col gap-2 rounded shadow-lg text-sm z-50"
+                                      style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
                                     >
-                                      Open Folder
-                                    </li>
+                                      {contextMenu.type === 'blank' ? (
+                                        <li
+                                          className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                          onClick={async () => {
+                                            const createFolder = async () => {
+                                              const data = JSON.parse(localStorage.getItem("cards")) || [];
+                                          
+                                              const newFolder = {
+                                                id: Date.now(),
+                                                title: "New Folder",
+                                                folderORfile: "folder",
+                                                image: "https://www.iconpacks.net/icons/2/free-folder-icon-1485-thumb.png",
+                                                folderItems: [],
+                                                parent: parseInt(id), // current folder as parent
+                                              };
+                                          
+                                              data.push(newFolder);
+                                          
+                                              const parentFolderIndex = data.findIndex(item => item.id === parseInt(id));
+                                              if (parentFolderIndex !== -1) {
+                                                const parentFolder = data[parentFolderIndex];
+                                                parentFolder.folderItems = parentFolder.folderItems || [];
+                                                parentFolder.folderItems.push(newFolder.id);
+                                              }
+                                          
+                                              localStorage.setItem("cards", JSON.stringify(data));
+                                          
+                                              // Update local state
+                                              setCards(data);
+                                              const updatedChildItems = data.filter(item =>
+                                                data[parentFolderIndex]?.folderItems.includes(item.id)
+                                              );
+                                              setItems(updatedChildItems);
+                                              setContextMenu(prev => ({ ...prev, visible: false }));
+                                              window.location.reload();
+                                            };
+                                          
+                                            await createFolder();
+                                          }}
+                                          
+                                        >
+                                          ➕ Create New Folder
+                                        </li>
+                                      ) : (
+                                        <>
+                                          {contextMenu.type === 'folder' && (
+                                            <li
+                                              className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                              onClick={handleOpenFileItems}
+                                            >
+                                              Open Folder
+                                            </li>
+                                          )}
+                                          {contextMenu.type === 'file' && (
+                                            <li
+                                              className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                              onClick={handleOpenMetadata}
+                                            >
+                                              Open Meta
+                                            </li>
+                                          )}
+                                          <li
+                                            className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                            onClick={() => {
+                                              const items = selectedItems.length ? selectedItems : [contextMenu.item];
+                                              setItemToMove(items);
+                                              setShowMoveModal(true);
+                                            }}
+                                          >
+                                            Move {contextMenu.type === 'folder' ? 'Folder' : 'File'}
+                                          </li>
+                                         
+                                          <li
+                                            className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                            onClick={() => {
+                                              setItemToCopy(selectedItems.length ? selectedItems : [contextMenu.item]);
+                                              setShowCopyModal(true);
+                                            }}
+                                          >
+                                            Copy
+                                          </li>
+                                          <li
+                                            className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                            onClick={() => confirmDelete(selectedItems)}
+                                          >
+                                            Delete
+                                          </li>
+                                        </>
+                                      )}
+                                    </ul>
                                   )}
-                                  {contextMenu.type === 'file' && (
-                                    <li 
-                                      className=" hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                      onClick={handleOpenMetadata}
-                                    >
-                                      Open Meta
-                                    </li>
-                                  )}
 
-                                  <li
-                                    className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                    onClick={() => {
-                                      const items = selectedItems.length ? selectedItems : [contextMenu.item];
-                                      setItemToMove(items);
-                                      setShowMoveModal(true);
-                                    }}
-                                  >
-                                    Move {contextMenu.type === 'folder' ? 'Folder' : 'File'}
-                                  </li>
-
-                                  <li
-                                    className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                    onClick={() => {
-                                      setItemToCopy(selectedItems.length ? selectedItems : [contextMenu.item]);
-                                      setShowCopyModal(true);
-                                    }}
-                                  >
-                                    Copy
-                                  </li>
-
-                                  <li 
-                                    className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                    onClick={() => confirmDelete(selectedItems)}
-                                  >
-                                    Delete
-                                  </li>
-                                </ul>
-                              )}
                             
                     </div>
             </div>
-            <input type="radio" name="my_tabs_3" className="tab" aria-label="Videos"  checked={activeTab === "videos"} onChange={() => setActiveTab("videos")}/>
-            <div className="tab-content bg-base-100 border-base-300 p-4">Tab content 2</div>
+                <input type="radio" name="my_tabs_3" className="tab" aria-label="Videos"  checked={activeTab === "videos"} onChange={() => setActiveTab("videos")}/>
+                <div className="tab-content bg-base-100 border-base-300 p-4">Tab content 2</div>
 
             </div>   
 
