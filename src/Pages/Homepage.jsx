@@ -11,6 +11,8 @@ import { Link, useLocation } from 'react-router-dom'
 import cardData from '../Data/CardData'
 import PaginationComponent from '../Components/PaginationComponent'
 import Breadcrumb from '../Components/Breadcrumb'
+import RenameFolderModal from '../Components/RenameFolderModal'
+import { useState } from 'react'
 
 
 const Homepage = () => {
@@ -37,6 +39,18 @@ const Homepage = () => {
         console.error("Items is not an array", items);
       }
     };
+
+    const [showRenameModal, setShowRenameModal] = useState(false);
+const [itemToRename, setItemToRename] = useState(null);
+
+const handleRename = (item, newName) => {
+  const data = JSON.parse(localStorage.getItem("cards")) || [];
+  const updatedData = data.map(i =>
+    i.id === item.id ? { ...i, title: newName } : i
+  );
+  localStorage.setItem("cards", JSON.stringify(updatedData));
+  setCards(updatedData);
+};
       
 
   
@@ -126,7 +140,7 @@ const Homepage = () => {
                                           
                                               const newFolder = {
                                                 id: Date.now(),
-                                                title: "New Folder",
+                                                title: `New Folder ${Date.now().toString().slice(-4)}`,
                                                 folderORfile: "folder",
                                                 image: "https://www.iconpacks.net/icons/2/free-folder-icon-1485-thumb.png",
                                                 folderItems: [],
@@ -190,28 +204,16 @@ const Homepage = () => {
                                             Copy
                                           </li>
                                           <li
-                                            className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                            onClick={() => {
-                                              const itemToRename = selectedItems.length ? selectedItems[0] : contextMenu.item;
-                                              const newName = prompt("Enter new name:", itemToRename?.title || "");
-                                              if (newName) {
-                                                const data = JSON.parse(localStorage.getItem("cards")) || [];
-                                                
-                                                const updatedData = data.map(item =>
-                                                  item.id === itemToRename.id ? { ...item, title: newName } : item
-                                                );
-                                                  localStorage.setItem("cards", JSON.stringify(updatedData));
-                                                  setCards(updatedData);
-                                                  window.location.reload();
-
-                                                  
-                                                
-                                              }
-                                              setContextMenu(prev => ({ ...prev, visible: false }));
-                                            }}
-                                          >
-                                            Rename
-                                          </li>
+                                              className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                              onClick={() => {
+                                                const item = selectedItems.length ? selectedItems[0] : contextMenu.item;
+                                                setItemToRename(item);
+                                                setShowRenameModal(true);
+                                                setContextMenu(prev => ({ ...prev, visible: false }));
+                                              }}
+                                            >
+                                              Rename
+                                            </li>
                                           <li
                                             className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
                                             onClick={() => confirmDelete(selectedItems)}
@@ -227,7 +229,21 @@ const Homepage = () => {
                     </div>
 
             <input type="radio" name="my_tabs_3" className="tab" aria-label="Videos"  checked={activeTab === "videos"} onChange={() => setActiveTab("videos")}/>
-            <div className="tab-content bg-base-100 border-base-300 p-6">Tab content 2</div>
+            <div className="tab-content bg-base-100 border-base-300 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 p-10">
+                    {cards
+                      .filter(item => item.folderORfile === "file")
+                      .map(item => (
+                        <FolderCard
+                          key={item.id}
+                          item={item}
+                          onRightClick={handleRightClick}
+                          onSelect={handleSelectItem}
+                          isSelected={selectedItems.some(i => i.id === item.id)}
+                        />
+                      ))}
+                  </div>
+            </div>
 
             </div>
             <MoveFileFolderModal
@@ -252,6 +268,12 @@ const Homepage = () => {
               item={itemToDelete?.length === 1 ? itemToDelete[0] : { title: `${itemToDelete?.length} items` }}
               onDelete={handleDelete}
               onCancel={cancelDelete}
+            />
+            <RenameFolderModal
+              isOpen={showRenameModal}
+              item={itemToRename}
+              onClose={() => setShowRenameModal(false)}
+              onRename={handleRename}
             />
         </div>
         

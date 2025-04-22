@@ -1,16 +1,20 @@
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
+const FolderCard = ({ item, onRightClick, onSelect, isSelected }) => {
+  const navigate = useNavigate();
 
-const FolderCard = ({item, onRightClick, onSelect, isSelected }) => {
-
-  
-
-  
+  const handleDoubleClick = () => {
+    if (item.folderORfile === 'file') {
+      navigate(`/metadata/${item.id}`);
+    } else {
+      navigate(`/folderitem/${item.id}`);
+    }
+  };
 
   return (
     <div className='relative'>
-         {/* Selection checkbox */}
+      {/* Selection checkbox */}
       <input
         type="checkbox"
         className="absolute top-2 left-2 z-10 w-4 h-4"
@@ -20,29 +24,24 @@ const FolderCard = ({item, onRightClick, onSelect, isSelected }) => {
       />
 
       {/* Folder/file card */}
-        <div  onContextMenu={(e) => {
-        e.preventDefault();
-        onRightClick(e, item);
+      <div
+        onContextMenu={(e) => {
+          e.preventDefault();
+          onRightClick(e, item);
         }}
-        className="max-w-xs rounded-md shadow-md border relative"
-        >
-        <Link to={item.folderORfile === 'file' ? `/metadata/${item.id}` : `/folderitem/${item.id}`}>
-              <img src={item.image} alt="" className="object-cover object-center w-full rounded-t-md h-30" />
-        </Link>
-            <div className="flex flex-col justify-between p-6 space-y-8">
-                <div className="space-y-2">
-                    <h2 className="text-sm font-semibold tracking-wide"></h2>
-                    <Link to={item.folderORfile === 'file' ? `/metadata/${item.id}` : `/folderitem/${item.id}`}>
-                      <p className="text-sm dark:text-gray-800">{item.title}</p>
-                    </Link>
-                    
-                    
-                </div>
-                
-            </div>
+        onClick={() => onSelect(item)} // single click for selecting
+        onDoubleClick={handleDoubleClick} // double click to go inside
+        className="max-w-xs rounded-md shadow-md border relative cursor-pointer"
+      >
+        <img src={item.image} alt="" className="object-cover object-center w-full rounded-t-md h-30" />
+        <div className="flex flex-col justify-between p-6 space-y-8">
+          <div className="space-y-2">
+            <p className="text-sm dark:text-gray-800">{item.title}</p>
+          </div>
         </div>
+      </div>
     </div>
   )
 }
 
-export default FolderCard
+export default FolderCard;
