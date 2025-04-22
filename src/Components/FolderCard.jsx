@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
 
-const FolderCard = ({ item, onRightClick, onSelect, isSelected }) => {
+const FolderCard = ({ item, onRightClick, onSelect, isSelected, onDrop }) => {
   const navigate = useNavigate();
 
   const handleDoubleClick = () => {
@@ -13,6 +13,17 @@ const FolderCard = ({ item, onRightClick, onSelect, isSelected }) => {
   };
 
   return (
+    <>
+    <div   draggable
+  onDragStart={(e) => {e.dataTransfer.setData("application/json", JSON.stringify(item)); console.log("Dragging:", item);}}
+  
+  onDragOver={(e) => e.preventDefault()}
+  onDrop={(e) => {
+    e.preventDefault();
+    const draggedItem = JSON.parse(e.dataTransfer.getData("application/json"));
+    if (onDrop) onDrop(draggedItem, item); // call passed handler
+    console.log("Dropped on:", item);
+  }}>
     <div className='relative'>
       {/* Selection checkbox */}
       <input
@@ -41,6 +52,9 @@ const FolderCard = ({ item, onRightClick, onSelect, isSelected }) => {
         </div>
       </div>
     </div>
+  </div>
+    
+    </>
   )
 }
 

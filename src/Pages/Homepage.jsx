@@ -17,7 +17,7 @@ import { useState } from 'react'
 
 const Homepage = () => {
 
-  const {handleRenameHomePage,itemToRename, setItemToRename, showRenameModal, setShowRenameModal, handleSelectAll, pasteClipboardItems, clipboard, setClipboard, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, totalPages,currentItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
+  const {handleDrop,handleRenameHomePage,itemToRename, setItemToRename, showRenameModal, setShowRenameModal, handleSelectAll, pasteClipboardItems, clipboard, setClipboard, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, totalPages,currentItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
     itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
     itemToDelete, setItemToDelete, cards, setCards,  topLevelItems, handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
     handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMove, cancelDelete, handleCopy} = useFileFolderManager();
@@ -102,14 +102,14 @@ const Homepage = () => {
                             
                                 {currentItems.map((item) => (
                                 <FolderCard key={item.id} item={item} onRightClick={handleRightClick} onSelect={handleSelectItem}
-                                isSelected={selectedItems.some(i => i.id === item.id)} />
+                                isSelected={selectedItems.some(i => i.id === item.id)}  onDrop={handleDrop} />
                                 ))}
                            
 
                               {/* Context menu */}
                               {contextMenu.visible && (
                                     <ul
-                                      className="fixed bg-white border p-3 flex flex-col gap-2 rounded shadow-lg text-sm z-50"
+                                      className="fixed bg-white border p-1 flex flex-col  rounded shadow-lg text-sm z-50"
                                       style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
                                     >
                                       {contextMenu.type === 'blank' ? (
@@ -147,6 +147,7 @@ const Homepage = () => {
                                         >
                                           ➕ Create New Folder
                                         </li>
+                                        <hr className='text-gray-300'/>
                                         {clipboard && clipboard.length > 0 && (
                                         <li
                                           className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
@@ -154,7 +155,9 @@ const Homepage = () => {
                                         >
                                           Paste
                                         </li>
+                                      
                                       )}
+                                      
 
                                         </>
                                       ) : (
@@ -165,16 +168,20 @@ const Homepage = () => {
                                               onClick={handleOpenFileItems}
                                             >
                                               Open Folder
+                                              <hr className='text-gray-300'/>
                                             </li>
                                           )}
+                                          
                                           {contextMenu.type === 'file' && (
                                             <li
                                               className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
                                               onClick={handleOpenMetadata}
                                             >
                                               Open Meta
+                                              <hr className='text-gray-300'/>
                                             </li>
                                           )}
+                                          
                                           <li
                                             className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
                                             onClick={() => {
@@ -185,6 +192,7 @@ const Homepage = () => {
                                           >
                                             Move {contextMenu.type === 'folder' ? 'Folder' : 'File'}
                                           </li>
+                                          <hr className='text-gray-300'/>
                                          
                                           <li
                                             className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
@@ -196,6 +204,7 @@ const Homepage = () => {
                                           >
                                             Copy
                                           </li>
+                                          <hr className='text-gray-300'/>
                                           <li
                                               className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
                                               onClick={() => {
@@ -207,6 +216,7 @@ const Homepage = () => {
                                             >
                                               Rename
                                             </li>
+                                            <hr className='text-gray-300'/>
                                           <li
                                             className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
                                             onClick={() => confirmDelete(selectedItems)}

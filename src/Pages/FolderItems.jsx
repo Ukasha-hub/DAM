@@ -16,7 +16,7 @@ import RenameFolderModal from '../Components/RenameFolderModal';
 const FolderItems = () => {
 
 
-  const {handleClickOutside ,itemToRename, setItemToRename, showRenameModal, setShowRenameModal, handleSelectAll, pasteClipboardItems, clipboard, setClipboard, handleItemsPerPageChangeinFiles , changePageinFiles ,paginatedTopLevelItemsinFiles,currentItemsinFiles,totalPagesinFiles,itemsPerPageinFiles, setItemsPerPageinFiles, currentPageinFiles, setCurrentPageinFiles,handleSortinFiles,sortOrderinFiles, setSortOrderinFiles, sortByinFiles, setSortByinFiles,sortedItemsinFiles,items, setItems, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, changePage,totalPages,currentItems,paginatedTopLevelItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
+  const {handleDrop ,itemToRename, setItemToRename, showRenameModal, setShowRenameModal, handleSelectAll, pasteClipboardItems, clipboard, setClipboard, handleItemsPerPageChangeinFiles , changePageinFiles ,paginatedTopLevelItemsinFiles,currentItemsinFiles,totalPagesinFiles,itemsPerPageinFiles, setItemsPerPageinFiles, currentPageinFiles, setCurrentPageinFiles,handleSortinFiles,sortOrderinFiles, setSortOrderinFiles, sortByinFiles, setSortByinFiles,sortedItemsinFiles,items, setItems, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, changePage,totalPages,currentItems,paginatedTopLevelItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
     itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
     itemToDelete, setItemToDelete, cards, setCards,  handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
     handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMoveInFolders, cancelDelete, handleCopy} = useFileFolderManager();
@@ -131,7 +131,7 @@ const FolderItems = () => {
    {/* Context menu */}
    {contextMenu.visible && (
                                     <ul
-                                      className="fixed bg-white border p-3 flex flex-col gap-2 rounded shadow-lg text-sm z-50"
+                                      className="fixed bg-white border  flex flex-col  rounded shadow-lg text-sm z-50"
                                       style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
                                     >
                                       {contextMenu.type === 'blank' ? (
@@ -177,6 +177,7 @@ const FolderItems = () => {
                                           
                                         >
                                           ➕ Create New Folder
+                                          <hr className='text-gray-300'/>
                                         </li>
                                         {clipboard && clipboard.length > 0 && (
                                           <li
@@ -274,13 +275,13 @@ const FolderItems = () => {
                       }}>
                       {currentItemsinFiles.map(item => (
                         <FolderCard key={item.id} item={item} onRightClick={handleRightClick} onSelect={handleSelectItem}
-                        isSelected={selectedItems.some(i => i.id === item.id)}/>
+                        isSelected={selectedItems.some(i => i.id === item.id)}  onDrop={handleDrop}/>
                       ))}
 
                             {/* Context menu */}
                             {contextMenu.visible && (
                                     <ul
-                                      className="fixed bg-white border p-3 flex flex-col gap-2 rounded shadow-lg text-sm z-50"
+                                      className="fixed bg-white border  flex flex-col  rounded shadow-lg text-sm z-50"
                                       style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
                                     >
                                       {contextMenu.type === 'blank' ? (
@@ -327,6 +328,7 @@ const FolderItems = () => {
                                         >
                                           ➕ Create New Folder
                                         </li>
+                                        <hr className='text-gray-300'/>
                                         {clipboard && clipboard.length > 0 && (
                                             <li
                                               className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
@@ -345,6 +347,7 @@ const FolderItems = () => {
                                               onClick={handleOpenFileItems}
                                             >
                                               Open Folder
+                                              <hr className='text-gray-300'/>
                                             </li>
                                           )}
                                           {contextMenu.type === 'file' && (
@@ -353,6 +356,7 @@ const FolderItems = () => {
                                               onClick={handleOpenMetadata}
                                             >
                                               Open Meta
+                                              <hr className='text-gray-300'/>
                                             </li>
                                           )}
                                           <li
@@ -364,6 +368,7 @@ const FolderItems = () => {
                                             }}
                                           >
                                             Move {contextMenu.type === 'folder' ? 'Folder' : 'File'}
+                                            <hr className='text-gray-300'/>
                                           </li>
                                          
                                           <li
@@ -375,6 +380,7 @@ const FolderItems = () => {
                                             }}
                                           >
                                             Copy
+                                            <hr className='text-gray-300'/>
                                           </li>
                                           <li
                                             className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
@@ -386,6 +392,7 @@ const FolderItems = () => {
                                             }}
                                           >
                                             Rename
+                                            <hr className='text-gray-300'/>
                                           </li>
 
                                           <li
