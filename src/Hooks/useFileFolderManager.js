@@ -21,6 +21,12 @@ const useFileFolderManager = () =>{
 
       const [items, setItems] = useState([]);
 
+      const [clipboard, setClipboard] = useState(null);
+
+      const [showRenameModal, setShowRenameModal] = useState(false);
+      const [itemToRename, setItemToRename] = useState(null);
+
+
       const [cards, setCards] = useState(() => {
         const saved = localStorage.getItem('cards');
         return saved ? JSON.parse(saved) : cardData;
@@ -38,6 +44,16 @@ const useFileFolderManager = () =>{
           )
         );
       }, [cards]);
+
+
+      useEffect(() => {
+        if (clipboard) localStorage.setItem("clipboard", JSON.stringify(clipboard));
+      }, [clipboard]);
+
+      useEffect(() => {
+        const storedClipboard = JSON.parse(localStorage.getItem("clipboard"));
+        if (storedClipboard) setClipboard(storedClipboard);
+      }, []);
 
     
     
@@ -311,46 +327,99 @@ const [currentPageinFiles, setCurrentPageinFiles] = useState(1);
 
         
       
-        const handleCopy = async(originalItems, targetFolderId) => {
-          const updatedCards = [...cards];
+        
 
-          setTimeout(() => {
-            navigate(`/folderitem/${destinationFolderId}`);
-          }, 100);
+        const pasteClipboardItems = (parentId = null) => {
+          if (!clipboard || clipboard.length === 0) return;
         
-          // Ensure originalItems is always an array
-          const itemsToCopy = Array.isArray(originalItems) ? originalItems : [originalItems];
+          const data = JSON.parse(localStorage.getItem("cards")) || [];
         
-          itemsToCopy.forEach(originalItem => {
-            const newId = uuidv4();// or use a proper ID generator
-            const copiedItem = {
-              ...originalItem,
+          const newItems = clipboard.map(item => {
+            const newId = Date.now() + Math.floor(Math.random() * 1000);
+            return {
+              ...item,
               id: newId,
-              title: `${originalItem.title} (copy)`,
-              originalId: originalItem.id
+              title: item.title + " (copy)",
+              parent: parentId ? parseInt(parentId) : null,
             };
-        
-            if (targetFolderId !== 'null') {
-              const destinationFolder = updatedCards.find(f => f.id === parseInt(targetFolderId));
-              if (destinationFolder && destinationFolder.folderORfile === 'folder') {
-                destinationFolder.folderItems.push(newId);
-              }
-            }
-        
-            updatedCards.push(copiedItem);
           });
         
-          setCards(updatedCards);
-          localStorage.setItem('cards', JSON.stringify(updatedCards));
+          const updated = [...data, ...newItems];
+        
+          if (parentId !== null && parentId !== undefined) {
+            const parentFolderIndex = updated.findIndex(item => item.id === parseInt(parentId));
+            if (parentFolderIndex !== -1) {
+              const parentFolder = updated[parentFolderIndex];
+              parentFolder.folderItems = parentFolder.folderItems || [];
+              newItems.forEach(newItem => {
+                parentFolder.folderItems.push(newItem.id);
+              });
+            }
+          }
+        
+          localStorage.setItem("cards", JSON.stringify(updated));
+          setCards(updated);
+        
+          if (parentId !== null && parentId !== undefined) {
+            const parentFolder = updated.find(item => item.id === parseInt(parentId));
+            const updatedChildItems = updated.filter(item =>
+              parentFolder?.folderItems.includes(item.id)
+            );
+            setItems(updatedChildItems);
+          } else {
+            const topLevelItems = updated.filter(item => item.parent === null || item.parent === undefined);
+            setItems(topLevelItems);
+          }
+        
+          setClipboard(null);
+          localStorage.removeItem("clipboard");
+          setContextMenu(prev => ({ ...prev, visible: false }));
           window.location.reload();
         };
+
+        
+        
+        const handleSelectAll = (items) => {
+          if (Array.isArray(items)) {
+            setSelectedItems((prevSelected) => {
+              if (prevSelected.length === items.length) {
+                return []; // Deselect all if all are already selected
+              } else {
+                return items.map(item => item); // Select all
+              }
+            });
+          } else {
+            console.error("Items is not an array", items);
+          }
+        }; 
+        
+        const handleRenameHomePage = (item, newName) => {
+          const data = JSON.parse(localStorage.getItem("cards")) || [];
+          const updatedData = data.map(i =>
+            i.id === item.id ? { ...i, title: newName } : i
+          );
+          localStorage.setItem("cards", JSON.stringify(updatedData));
+          setCards(updatedData);
+        };
+
+        useEffect(() => {
+          const handleClickOutside = () => {
+            if (contextMenu.visible) {
+              setContextMenu(prev => ({ ...prev, visible: false }));
+            }
+          };
+          window.addEventListener("click", handleClickOutside);
+          return () => window.removeEventListener("click", handleClickOutside);
+        }, [contextMenu.visible]);
+
+        
         
 
 
-        return{handleItemsPerPageChangeinFiles , changePageinFiles ,paginatedTopLevelItemsinFiles,currentItemsinFiles,totalPagesinFiles,itemsPerPageinFiles, setItemsPerPageinFiles, currentPageinFiles, setCurrentPageinFiles,handleSortinFiles,sortOrderinFiles, setSortOrderinFiles, sortByinFiles, setSortByinFiles,sortedItemsinFiles,items, setItems, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, changePage,totalPages,currentItems,paginatedTopLevelItems , activeTab,  setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
+        return{  handleRenameHomePage,itemToRename, setItemToRename, showRenameModal, setShowRenameModal, handleSelectAll, pasteClipboardItems, clipboard, setClipboard, handleItemsPerPageChangeinFiles , changePageinFiles ,paginatedTopLevelItemsinFiles,currentItemsinFiles,totalPagesinFiles,itemsPerPageinFiles, setItemsPerPageinFiles, currentPageinFiles, setCurrentPageinFiles,handleSortinFiles,sortOrderinFiles, setSortOrderinFiles, sortByinFiles, setSortByinFiles,sortedItemsinFiles,items, setItems, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, changePage,totalPages,currentItems,paginatedTopLevelItems , activeTab,  setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
             itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
             itemToDelete, setItemToDelete, cards, setCards,  topLevelItems, handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
-            handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMove,handleMoveInFolders, cancelDelete, handleCopy}
+            handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMove,handleMoveInFolders, cancelDelete}
 
 
 }

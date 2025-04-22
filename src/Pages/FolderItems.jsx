@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import {  useParams } from 'react-router-dom';
 import FolderCard from '../Components/FolderCard';
 import MoveFileFolderModal from '../Components/MoveFileFolderModal';
-import CopyFileFolderModal from '../Components/CopyFileFolderModal';
+
 import DeleteFileFolderModal from '../Components/DeleteFileFolderModal';
 
 import useFileFolderManager from '../Hooks/useFileFolderManager';
@@ -16,7 +16,7 @@ import RenameFolderModal from '../Components/RenameFolderModal';
 const FolderItems = () => {
 
 
-  const {handleItemsPerPageChangeinFiles , changePageinFiles ,paginatedTopLevelItemsinFiles,currentItemsinFiles,totalPagesinFiles,itemsPerPageinFiles, setItemsPerPageinFiles, currentPageinFiles, setCurrentPageinFiles,handleSortinFiles,sortOrderinFiles, setSortOrderinFiles, sortByinFiles, setSortByinFiles,sortedItemsinFiles,items, setItems, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, changePage,totalPages,currentItems,paginatedTopLevelItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
+  const {handleClickOutside ,itemToRename, setItemToRename, showRenameModal, setShowRenameModal, handleSelectAll, pasteClipboardItems, clipboard, setClipboard, handleItemsPerPageChangeinFiles , changePageinFiles ,paginatedTopLevelItemsinFiles,currentItemsinFiles,totalPagesinFiles,itemsPerPageinFiles, setItemsPerPageinFiles, currentPageinFiles, setCurrentPageinFiles,handleSortinFiles,sortOrderinFiles, setSortOrderinFiles, sortByinFiles, setSortByinFiles,sortedItemsinFiles,items, setItems, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, changePage,totalPages,currentItems,paginatedTopLevelItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
     itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
     itemToDelete, setItemToDelete, cards, setCards,  handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
     handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMoveInFolders, cancelDelete, handleCopy} = useFileFolderManager();
@@ -24,54 +24,34 @@ const FolderItems = () => {
   const { id } = useParams();
   const [folder, setFolder] = useState(null);
 
-  useEffect(() => {
-    const handleClickOutside = () => {
-      if (contextMenu.visible) {
-        setContextMenu(prev => ({ ...prev, visible: false }));
-      }
-    };
-    window.addEventListener("click", handleClickOutside);
-    return () => window.removeEventListener("click", handleClickOutside);
-  }, [contextMenu.visible]);
+  
   
   
     
   const location = useLocation();
     const pathnames = location.pathname.split('/').filter(x => x);
  
-    const handleSelectAll = (items) => {
-      if (Array.isArray(items)) {
-        setSelectedItems((prevSelected) => {
-          if (prevSelected.length === items.length) {
-            return []; // Deselect all if all are already selected
-          } else {
-            return items.map(item => item); // Select all
-          }
-        });
-      } else {
-        console.error("Items is not an array", items);
+    const handleRenameFolders = (item, newName) => {
+      const data = JSON.parse(localStorage.getItem("cards")) || [];
+      const index = data.findIndex(i => i.id === item.id);
+      if (index !== -1) {
+        data[index].title = newName;
+        localStorage.setItem("cards", JSON.stringify(data));
+        setCards(data);
+    
+        // Optional: update items in current folder
+        const parentFolderIndex = data.findIndex(i => i.id === parseInt(id));
+        const updatedChildItems = data.filter(i =>
+          data[parentFolderIndex]?.folderItems.includes(i.id)
+        );
+        setItems(updatedChildItems);
       }
     };
 
-    const [showRenameModal, setShowRenameModal] = useState(false);
-const [itemToRename, setItemToRename] = useState(null);
+    
 
-const handleRename = (item, newName) => {
-  const data = JSON.parse(localStorage.getItem("cards")) || [];
-  const index = data.findIndex(i => i.id === item.id);
-  if (index !== -1) {
-    data[index].title = newName;
-    localStorage.setItem("cards", JSON.stringify(data));
-    setCards(data);
 
-    // Optional: update items in current folder
-    const parentFolderIndex = data.findIndex(i => i.id === parseInt(id));
-    const updatedChildItems = data.filter(i =>
-      data[parentFolderIndex]?.folderItems.includes(i.id)
-    );
-    setItems(updatedChildItems);
-  }
-};
+
    
 
   useEffect(() => {
@@ -90,7 +70,7 @@ const handleRename = (item, newName) => {
 
   if (!folder) return <div className="p-4">Folder not found.</div>;
 
-console.log(contextMenu)
+
 
   if (items.length === 0) return( 
   
@@ -155,6 +135,7 @@ console.log(contextMenu)
                                       style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
                                     >
                                       {contextMenu.type === 'blank' ? (
+                                        <>
                                         <li
                                           className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
                                           onClick={async () => {
@@ -197,6 +178,16 @@ console.log(contextMenu)
                                         >
                                           ➕ Create New Folder
                                         </li>
+                                        {clipboard && clipboard.length > 0 && (
+                                          <li
+                                            className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                            onClick={() => pasteClipboardItems(id)}
+                                          >
+                                            Paste
+                                          </li>
+                                        )}
+
+                                        </>
                                       ) : (
                                         <></>
                                       )}
@@ -293,6 +284,7 @@ console.log(contextMenu)
                                       style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
                                     >
                                       {contextMenu.type === 'blank' ? (
+                                        <>
                                         <li
                                           className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
                                           onClick={async () => {
@@ -335,6 +327,16 @@ console.log(contextMenu)
                                         >
                                           ➕ Create New Folder
                                         </li>
+                                        {clipboard && clipboard.length > 0 && (
+                                            <li
+                                              className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                              onClick={() => pasteClipboardItems(id)}
+                                            >
+                                              Paste
+                                            </li>
+                                          )}
+
+                                        </>
                                       ) : (
                                         <>
                                           {contextMenu.type === 'folder' && (
@@ -368,7 +370,8 @@ console.log(contextMenu)
                                             className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
                                             onClick={() => {
                                               setItemToCopy(selectedItems.length ? selectedItems : [contextMenu.item]);
-                                              setShowCopyModal(true);
+                                              setClipboard(selectedItems.length ? selectedItems : [contextMenu.item]);
+                                              setContextMenu(prev => ({ ...prev, visible: false }));
                                             }}
                                           >
                                             Copy
@@ -425,15 +428,7 @@ console.log(contextMenu)
                         folders={folders}
                         item={itemToMove}></MoveFileFolderModal>
 
-            {showCopyModal && (
-                <CopyFileFolderModal
-                isOpen={showCopyModal}
-                folders={folders}
-                item={selectedItems}
-                onCopy={handleCopy}
-                onClose={() => setShowCopyModal(false)}
-                />
-              )}
+            
 
             <DeleteFileFolderModal
               show={showDeleteModal}
@@ -445,7 +440,7 @@ console.log(contextMenu)
             isOpen={showRenameModal}
             item={itemToRename}
             onClose={() => setShowRenameModal(false)}
-            onRename={handleRename}
+            onRename={handleRenameFolders} // pass current item and folder ID
           />
 
 
