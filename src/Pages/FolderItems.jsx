@@ -12,11 +12,12 @@ import cardData from '../Data/CardData';
 import PaginationComponent from '../Components/PaginationComponent';
 import Breadcrumb from '../Components/Breadcrumb';
 import RenameFolderModal from '../Components/RenameFolderModal';
+import TopbarInsideTabs from '../Components/TopbarInsideTabs';
 
 const FolderItems = () => {
 
 
-  const {handleDrop ,itemToRename, setItemToRename, showRenameModal, setShowRenameModal, handleSelectAll, pasteClipboardItems, clipboard, setClipboard, handleItemsPerPageChangeinFiles , changePageinFiles ,paginatedTopLevelItemsinFiles,currentItemsinFiles,totalPagesinFiles,itemsPerPageinFiles, setItemsPerPageinFiles, currentPageinFiles, setCurrentPageinFiles,handleSortinFiles,sortOrderinFiles, setSortOrderinFiles, sortByinFiles, setSortByinFiles,sortedItemsinFiles,items, setItems, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, changePage,totalPages,currentItems,paginatedTopLevelItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
+  const {createFolderInFolders,handleDrop ,itemToRename, setItemToRename, showRenameModal, setShowRenameModal, handleSelectAll, pasteClipboardItems, clipboard, setClipboard, handleItemsPerPageChangeinFiles , changePageinFiles ,paginatedTopLevelItemsinFiles,currentItemsinFiles,totalPagesinFiles,itemsPerPageinFiles, setItemsPerPageinFiles, currentPageinFiles, setCurrentPageinFiles,handleSortinFiles,sortOrderinFiles, setSortOrderinFiles, sortByinFiles, setSortByinFiles,sortedItemsinFiles,items, setItems, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, changePage,totalPages,currentItems,paginatedTopLevelItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
     itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
     itemToDelete, setItemToDelete, cards, setCards,  handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
     handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMoveInFolders, cancelDelete, handleCopy} = useFileFolderManager();
@@ -74,139 +75,74 @@ const FolderItems = () => {
 
   if (items.length === 0) return( 
   
-  <div className="p-4" onContextMenu={(e) => {
-    e.preventDefault();
-    setContextMenu({
-      visible: true,
-      x: e.clientX,
-      y: e.clientY,
-      type: 'blank',
-      item: null,
-    });
-  }}
-> 
-  
-  <div className=' h-20 '>
-            {/* name of each tab group should be unique */}
-            <div className="tabs tabs-lift">
-            <input type="radio" name="" className="tab" aria-label="Folder Content" checked={activeTab === "folder-content"} onChange={() => setActiveTab("folder-content")}/>
-            <div className='tab-content bg-base-100 border-base-300 p-4'>
+                <div className="p-4" onContextMenu={(e) => {
+                  e.preventDefault();
+                  setContextMenu({
+                    visible: true,
+                    x: e.clientX,
+                    y: e.clientY,
+                    type: 'blank',
+                    item: null,
+                  });
+                }}
+              > 
+                
+                <div className=' h-20 '>
+                          {/* name of each tab group should be unique */}
+                          <div className="tabs tabs-lift">
+                          <input type="radio" name="" className="tab" aria-label="Folder Content" checked={activeTab === "folder-content"} onChange={() => setActiveTab("folder-content")}/>
+                          <div className='tab-content bg-base-100 border-base-300 p-4'>
 
-            <div className='flex flex-col lg:flex-row lg:justify-between'>
-  <div className="breadcrumbs text-xs lg:text-sm">
-  <Breadcrumb location={location} pathnames={pathnames}></Breadcrumb>
-  </div>
+                          <TopbarInsideTabs location={location} pathnames={pathnames} navigate={navigate} currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} handleSort={handleSort} sortBy={sortBy} sortOrder={sortOrder} handleItemsPerPageChange={handleItemsPerPageChange } itemsPerPage={itemsPerPage} handleSelectAll={handleSelectAll}></TopbarInsideTabs>
 
-  <div>
-    <ul className='flex flex-row gap-7 lg:justify-around text-xs'>
-      <li><a href="">Folder Subscribe</a></li>
-      <li><a href="">Folder Settings</a></li>
-    </ul>
-  </div>
-</div>
+              {/*buttons and paginations */}
+              <div>
 
-{/*buttons and paginations */}
-<div>
-<div className=" text-xs mt-1 lg:text-sm flex flex-col gap-1 lg:flex-row justify-evenly lg:justify-between">
-      <ul className='flex flex-row gap-2 lg:gap-3 '>
-          
-          <li><button onClick={() => navigate("/add-files")} className="btn-xs bg-green-300 p-1 rounded-sm">Add Files</button></li>
-          <li><button className='btn btn-xs' onClick={()=>{handleSelectAll(items)}}>Select all</button></li>
-          <li><a href="">Search within folder</a></li>
-          
-          
-          <li>
-              <div className="dropdown ">
-                      <div tabIndex={0} role="button" className="text-xs lg:text-sm lg:btn-sm ">More actions ▼</div>
-                      <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                          <li><a>Item 1</a></li>
-                          <li><a>Item 2</a></li>
-                      </ul>
-              </div>
-          </li>
-      </ul>
-      <PaginationComponent currentPage={currentPageinFiles} totalPages={totalPagesinFiles} onPageChange={setCurrentPageinFiles} handleSort={handleSortinFiles} sortBy={sortByinFiles} sortOrder={sortOrder} handleItemsPerPageChange={handleItemsPerPageChangeinFiles } itemsPerPage={itemsPerPageinFiles}></PaginationComponent>
-  </div>
-  <div className='flex justify-center pt-50'><div className='pb-30'>Folder is empty</div></div>
-   {/* Context menu */}
-   {contextMenu.visible && (
-                                    <ul
-                                      className="fixed bg-white border  flex flex-col  rounded shadow-lg text-sm z-50"
-                                      style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
-                                    >
-                                      {contextMenu.type === 'blank' ? (
-                                        <>
-                                        <li
-                                          className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                          onClick={async () => {
-                                            const createFolder = async () => {
-                                              const data = JSON.parse(localStorage.getItem("cards")) || [];
-                                          
-                                              const newFolder = {
-                                                id: Date.now(),
-                                                title: "New Folder",
-                                                folderORfile: "folder",
-                                                image: "https://www.iconpacks.net/icons/2/free-folder-icon-1485-thumb.png",
-                                                folderItems: [],
-                                                parent: parseInt(id), // current folder as parent
-                                              };
-                                          
-                                              data.push(newFolder);
-                                          
-                                              const parentFolderIndex = data.findIndex(item => item.id === parseInt(id));
-                                              if (parentFolderIndex !== -1) {
-                                                const parentFolder = data[parentFolderIndex];
-                                                parentFolder.folderItems = parentFolder.folderItems || [];
-                                                parentFolder.folderItems.push(newFolder.id);
-                                              }
-                                          
-                                              localStorage.setItem("cards", JSON.stringify(data));
-                                          
-                                              // Update local state
-                                              setCards(data);
-                                              const updatedChildItems = data.filter(item =>
-                                                data[parentFolderIndex]?.folderItems.includes(item.id)
-                                              );
-                                              setItems(updatedChildItems);
-                                              setContextMenu(prev => ({ ...prev, visible: false }));
-                                              window.location.reload();
-                                            };
-                                          
-                                            await createFolder();
-                                          }}
-                                          
-                                        >
-                                          ➕ Create New Folder
-                                          <hr className='text-gray-300'/>
-                                        </li>
-                                        {clipboard && clipboard.length > 0 && (
-                                          <li
-                                            className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                            onClick={() => pasteClipboardItems(id)}
-                                          >
-                                            Paste
-                                          </li>
-                                        )}
+                <div className='flex justify-center pt-50'><div className='pb-30'>Folder is empty</div></div>
+                {/* Context menu */}
+                {contextMenu.visible && (
+                                                  <ul
+                                                    className="fixed bg-white border  flex flex-col  rounded shadow-lg text-sm z-50"
+                                                    style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
+                                                  >
+                                                    {contextMenu.type === 'blank' ? (
+                                                      <>
+                                                      <li
+                                                        className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                                        onClick={()=>{createFolderInFolders(id)}}
+                                                        
+                                                      >
+                                                        ➕ Create New Folder
+                                                        <hr className='text-gray-300'/>
+                                                      </li>
+                                                      {clipboard && clipboard.length > 0 && (
+                                                        <li
+                                                          className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
+                                                          onClick={() => pasteClipboardItems(id)}
+                                                        >
+                                                          Paste
+                                                        </li>
+                                                      )}
 
-                                        </>
-                                      ) : (
-                                        <></>
-                                      )}
-                                    </ul>
-                                  )}
-
-
-</div>
-
+                                                      </>
+                                                    ) : (
+                                                      <></>
+                                                    )}
+                                                  </ul>
+                                                )}
 
 
               </div>
-            <input type="radio" name="my_tabs_3" className="tab" aria-label="Videos"  checked={activeTab === "videos"} onChange={() => setActiveTab("videos")}/>
-            <div className="tab-content bg-base-100 border-base-300 p-4">Tab content 2</div>  
-  
-</div>
-</div>
-</div>
+
+
+
+                            </div>
+                          <input type="radio" name="my_tabs_3" className="tab" aria-label="Videos"  checked={activeTab === "videos"} onChange={() => setActiveTab("videos")}/>
+                          <div className="tab-content bg-base-100 border-base-300 p-4">Tab content 2</div>  
+                
+              </div>
+              </div>
+              </div>
   )
 
  
@@ -221,7 +157,8 @@ const FolderItems = () => {
             <input type="radio" name="" className="tab" aria-label="Folder Content" checked={activeTab === "folder-content"} onChange={() => setActiveTab("folder-content")}/>
             <div className='tab-content bg-base-100 border-base-300 p-4'>
               {/*breadcrump */}
-              <div className='flex flex-col lg:flex-row lg:justify-between'>
+              
+                          <div className='flex flex-col lg:flex-row lg:justify-between'>
                             <div className="breadcrumbs text-xs lg:text-sm">
                             <Breadcrumb location={location} pathnames={pathnames}></Breadcrumb>
                             </div>
@@ -288,42 +225,7 @@ const FolderItems = () => {
                                         <>
                                         <li
                                           className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                          onClick={async () => {
-                                            const createFolder = async () => {
-                                              const data = JSON.parse(localStorage.getItem("cards")) || [];
-                                          
-                                              const newFolder = {
-                                                id: Date.now(),
-                                                title: `New Folder ${Date.now().toString().slice(-4)}`,
-                                                folderORfile: "folder",
-                                                image: "https://www.iconpacks.net/icons/2/free-folder-icon-1485-thumb.png",
-                                                folderItems: [],
-                                                parent: parseInt(id), // current folder as parent
-                                              };
-                                          
-                                              data.push(newFolder);
-                                          
-                                              const parentFolderIndex = data.findIndex(item => item.id === parseInt(id));
-                                              if (parentFolderIndex !== -1) {
-                                                const parentFolder = data[parentFolderIndex];
-                                                parentFolder.folderItems = parentFolder.folderItems || [];
-                                                parentFolder.folderItems.push(newFolder.id);
-                                              }
-                                          
-                                              localStorage.setItem("cards", JSON.stringify(data));
-                                          
-                                              // Update local state
-                                              setCards(data);
-                                              const updatedChildItems = data.filter(item =>
-                                                data[parentFolderIndex]?.folderItems.includes(item.id)
-                                              );
-                                              setItems(updatedChildItems);
-                                              setContextMenu(prev => ({ ...prev, visible: false }));
-                                              window.location.reload();
-                                            };
-                                          
-                                            await createFolder();
-                                          }}
+                                          onClick={()=>{createFolderInFolders(id)}}
                                           
                                         >
                                           ➕ Create New Folder

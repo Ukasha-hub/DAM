@@ -13,11 +13,12 @@ import PaginationComponent from '../Components/PaginationComponent'
 import Breadcrumb from '../Components/Breadcrumb'
 import RenameFolderModal from '../Components/RenameFolderModal'
 import { useState } from 'react'
+import TopbarInsideTabs from '../Components/TopbarInsideTabs'
 
 
 const Homepage = () => {
 
-  const {handleDrop,handleRenameHomePage,itemToRename, setItemToRename, showRenameModal, setShowRenameModal, handleSelectAll, pasteClipboardItems, clipboard, setClipboard, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, totalPages,currentItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
+  const {createFolderInHomepage, handleDrop,handleRenameHomePage,itemToRename, setItemToRename, showRenameModal, setShowRenameModal, handleSelectAll, pasteClipboardItems, clipboard, setClipboard, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, totalPages,currentItems, activeTab, setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
     itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
     itemToDelete, setItemToDelete, cards, setCards,  topLevelItems, handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
     handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMove, cancelDelete, handleCopy} = useFileFolderManager();
@@ -43,44 +44,8 @@ const Homepage = () => {
             <div className="tabs tabs-lift">
             <input type="radio" name="" className="tab" aria-label="Folder Content" checked={activeTab === "folder-content"} onChange={() => setActiveTab("folder-content")}/>
             <div className="tab-content bg-base-100 border-base-300 p-6">
-                        {/*breadcrump */}
-                        <div className='flex flex-col lg:flex-row lg:justify-between'>
-
-                        <Breadcrumb location={location} pathnames={pathnames}></Breadcrumb>
-
-                            <div>
-                              <ul className='flex flex-row gap-7 lg:justify-around text-xs'>
-                                <li><a href="">Folder Subscribe</a></li>
-                                <li><a href="">Folder Settings</a></li>
-                              </ul>
-                            </div>
-                          </div>
-
-                        {/*buttons and paginations */}
-                        <div>
-                        <div className=" text-xs mt-1 lg:text-sm flex flex-col gap-1 lg:flex-row justify-evenly lg:justify-between">
-                                <ul className='flex flex-row gap-2 lg:gap-3 '>
-                                    
-                                    <li><button onClick={() => navigate("/add-files")} className="btn btn-xs bg-green-300 p-1 rounded-sm">Add Files</button></li>
-                                    <li><button className='btn btn-xs' onClick={()=>{handleSelectAll(cards)}}>Select all</button></li>
-                                    
-                                    
-                                    
-                                    <li>
-                                        <div className="dropdown ">
-                                                <div tabIndex={0} role="button" className="text-xs lg:text-sm lg:btn-sm ">More actions ▼</div>
-                                                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                                                    <li><a>Item 1</a></li>
-                                                    <li><a>Item 2</a></li>
-                                                </ul>
-                                        </div>
-                                    </li>
-                                </ul>
-                                <PaginationComponent currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} handleSort={handleSort} sortBy={sortBy} sortOrder={sortOrder} handleItemsPerPageChange={handleItemsPerPageChange } itemsPerPage={itemsPerPage}></PaginationComponent>
-                            </div>
-                            
-
-                        </div>
+            <TopbarInsideTabs location={location} pathnames={pathnames} navigate={navigate} currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} handleSort={handleSort} sortBy={sortBy} sortOrder={sortOrder} handleItemsPerPageChange={handleItemsPerPageChange } itemsPerPage={itemsPerPage} handleSelectAll={handleSelectAll}></TopbarInsideTabs>
+                        
                         {/*cards of folders */}
                        <div
                             className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 p-10 "
@@ -116,33 +81,7 @@ const Homepage = () => {
                                         <>
                                         <li
                                           className="hover:bg-gray-100 p-1 rounded-sm cursor-pointer"
-                                          onClick={async () => {
-                                            const createFolder = async () => {
-                                              const data = JSON.parse(localStorage.getItem("cards")) || [];
-                                          
-                                              const newFolder = {
-                                                id: Date.now(),
-                                                title: `New Folder ${Date.now().toString().slice(-4)}`,
-                                                folderORfile: "folder",
-                                                image: "https://www.iconpacks.net/icons/2/free-folder-icon-1485-thumb.png",
-                                                folderItems: [],
-                                                
-                                              };
-                                          
-                                              data.push(newFolder);
-                                          
-                                             
-                                          
-                                              localStorage.setItem("cards", JSON.stringify(data));
-                                          
-                                              // Update local state
-                                              
-                                              setContextMenu(prev => ({ ...prev, visible: false }));
-                                              window.location.reload();
-                                            };
-                                          
-                                            await createFolder();
-                                          }}
+                                          onClick={createFolderInHomepage}
                                           
                                         >
                                           ➕ Create New Folder
@@ -234,7 +173,7 @@ const Homepage = () => {
             <input type="radio" name="my_tabs_3" className="tab" aria-label="Videos"  checked={activeTab === "videos"} onChange={() => setActiveTab("videos")}/>
             <div className="tab-content bg-base-100 border-base-300 p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 p-10">
-                    {cards
+                    {topLevelItems
                       .filter(item => item.folderORfile === "file")
                       .map(item => (
                         <FolderCard

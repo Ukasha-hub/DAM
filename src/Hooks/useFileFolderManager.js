@@ -460,12 +460,71 @@ const [currentPageinFiles, setCurrentPageinFiles] = useState(1);
             console.log("handleDrop called", dragged, target);
           }
         };
+
+        const createFolderInHomepage = async () => {
+          const data = JSON.parse(localStorage.getItem("cards")) || [];
+      
+          const newFolder = {
+            id: Date.now(),
+            title: `New Folder ${Date.now().toString().slice(-4)}`,
+            folderORfile: "folder",
+            image: "https://www.iconpacks.net/icons/2/free-folder-icon-1485-thumb.png",
+            folderItems: [],
+            
+          };
+      
+          data.push(newFolder);
+      
+         
+      
+          localStorage.setItem("cards", JSON.stringify(data));
+      
+          // Update local state
+          
+          setContextMenu(prev => ({ ...prev, visible: false }));
+          window.location.reload();
+        };
+
+        const createFolderInFolders = async (id) => {
+          const data = JSON.parse(localStorage.getItem("cards")) || [];
+      
+          const newFolder = {
+            id: Date.now(),
+            title: `New Folder ${Date.now().toString().slice(-4)}`,
+            folderORfile: "folder",
+            image: "https://www.iconpacks.net/icons/2/free-folder-icon-1485-thumb.png",
+            folderItems: [],
+            parent: parseInt(id), // current folder as parent
+          };
+      
+          data.push(newFolder);
+      
+          const parentFolderIndex = data.findIndex(item => item.id === parseInt(id));
+          if (parentFolderIndex !== -1) {
+            const parentFolder = data[parentFolderIndex];
+            parentFolder.folderItems = parentFolder.folderItems || [];
+            parentFolder.folderItems.push(newFolder.id);
+          }
+      
+          localStorage.setItem("cards", JSON.stringify(data));
+      
+          // Update local state
+          setCards(data);
+          const updatedChildItems = data.filter(item =>
+            data[parentFolderIndex]?.folderItems.includes(item.id)
+          );
+          setItems(updatedChildItems);
+          setContextMenu(prev => ({ ...prev, visible: false }));
+          window.location.reload();
+        };
+      
+        
         
         
         
 
 
-        return{handleDrop,  handleRenameHomePage,itemToRename, setItemToRename, showRenameModal, setShowRenameModal, handleSelectAll, pasteClipboardItems, clipboard, setClipboard, handleItemsPerPageChangeinFiles , changePageinFiles ,paginatedTopLevelItemsinFiles,currentItemsinFiles,totalPagesinFiles,itemsPerPageinFiles, setItemsPerPageinFiles, currentPageinFiles, setCurrentPageinFiles,handleSortinFiles,sortOrderinFiles, setSortOrderinFiles, sortByinFiles, setSortByinFiles,sortedItemsinFiles,items, setItems, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, changePage,totalPages,currentItems,paginatedTopLevelItems , activeTab,  setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
+        return{createFolderInFolders, createFolderInHomepage, handleDrop,  handleRenameHomePage,itemToRename, setItemToRename, showRenameModal, setShowRenameModal, handleSelectAll, pasteClipboardItems, clipboard, setClipboard, handleItemsPerPageChangeinFiles , changePageinFiles ,paginatedTopLevelItemsinFiles,currentItemsinFiles,totalPagesinFiles,itemsPerPageinFiles, setItemsPerPageinFiles, currentPageinFiles, setCurrentPageinFiles,handleSortinFiles,sortOrderinFiles, setSortOrderinFiles, sortByinFiles, setSortByinFiles,sortedItemsinFiles,items, setItems, itemsPerPage,handleItemsPerPageChange ,handleSort,sortBy, sortOrder,currentPage, setCurrentPage, changePage,totalPages,currentItems,paginatedTopLevelItems , activeTab,  setActiveTab, contextMenu, setContextMenu, showMoveModal, setShowMoveModal, showCopyModal, setShowCopyModal, 
             itemToCopy, setItemToCopy, itemToMove, setItemToMove, selectedItems, setSelectedItems, showDeleteModal, setShowDeleteModal, 
             itemToDelete, setItemToDelete, cards, setCards,  topLevelItems, handleSelectItem, navigate, handleRightClick, handleOpenMetadata,
             handleOpenFileItems, folders,  confirmDelete, handleDelete, handleMove,handleMoveInFolders, cancelDelete}
