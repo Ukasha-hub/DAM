@@ -48,7 +48,7 @@ const Login = () => {
         <footer className="footer sm:footer-horizontal bg-gray-100 opacity-90 text-gray-800 justify-center p-4">
             
                 
-                <div className='flex flex-row'><span>Powered by:</span> <img src={logo} alt="" className='h-7 w-30'/></div>
+                <div className='flex flex-row'><span>Developed by:</span> <img src={logo} alt="" className='h-7 w-30'/></div>
             
             
         </footer>

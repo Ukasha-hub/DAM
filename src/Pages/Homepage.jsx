@@ -14,6 +14,7 @@ import Breadcrumb from '../Components/Breadcrumb'
 import RenameFolderModal from '../Components/RenameFolderModal'
 import { useState } from 'react'
 import TopbarInsideTabs from '../Components/TopbarInsideTabs'
+import logo from '../assets/sysnova broadcast logo.png'; 
 
 
 const Homepage = () => {
@@ -188,6 +189,9 @@ const Homepage = () => {
             </div>
 
             </div>
+
+            
+            
             <MoveFileFolderModal
             isOpen={showMoveModal}
             onClose={() => setShowMoveModal(false)}

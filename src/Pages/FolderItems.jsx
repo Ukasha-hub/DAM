@@ -14,6 +14,7 @@ import Breadcrumb from '../Components/Breadcrumb';
 import RenameFolderModal from '../Components/RenameFolderModal';
 import TopbarInsideTabs from '../Components/TopbarInsideTabs';
 
+
 const FolderItems = () => {
 
 
@@ -329,6 +330,8 @@ const FolderItems = () => {
                 </div>
 
             </div>   
+
+          
 
             <MoveFileFolderModal
                         isOpen={showMoveModal}
